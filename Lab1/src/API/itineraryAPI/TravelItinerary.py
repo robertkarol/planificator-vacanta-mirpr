@@ -91,6 +91,8 @@ class TravelItinerary:
                 }
             ]
         }]
+        self.__modified = True
+        self.__cached = None
 
     def add_visit(self, location, date_of_visit, staying_time, priority, opening_time='00:00:00', closing_time='23:59:59'):
         visit = {
@@ -105,6 +107,7 @@ class TravelItinerary:
             }
         }
         self.__to_visit.append(visit)
+        self.__modified = True
 
     def __get_transitions(self, instructions):
         return [Transition(i['distance'], i['duration']) for i in instructions if i['instructionType'] == 'TravelBetweenLocations']
@@ -116,14 +119,20 @@ class TravelItinerary:
                       i['startTime'], i['endTime']) for i in instructions if i['instructionType'] == 'VisitLocation']
 
     def compute_route(self):
-        requestJSON = {
-            'agents' : self.__agents,
-            'itineraryItems' : self.__to_visit
-        }
-        requestJSON = json.dumps(requestJSON)
-        headers = {'content-type': 'application/json'}
-        response = requests.post(settings.OPTIMIZE_ITINERARY + settings.API_KEY, data=requestJSON, headers=headers)
-        itinerary = json.loads(response.text)
+        if self.__modified and self.__cached == None:
+            print("Server req")
+            requestJSON = {
+                'agents' : self.__agents,
+                'itineraryItems' : self.__to_visit
+            }
+            requestJSON = json.dumps(requestJSON)
+            headers = {'content-type': 'application/json'}
+            response = requests.post(settings.OPTIMIZE_ITINERARY + settings.API_KEY, data=requestJSON, headers=headers)
+            itinerary = json.loads(response.text)
+            self.__cached = itinerary
+            self.__modified = False
+        else:
+            itinerary = self.__cached
         instructions = itinerary['resourceSets'][0]['resources'][0]['agentItineraries'][0]['instructions']
         return self.__get_visits(instructions), self.__get_transitions(instructions)
         #(response.text)

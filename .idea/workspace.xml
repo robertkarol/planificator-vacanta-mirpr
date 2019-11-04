@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="903b0d53-87c8-44b4-9fb4-d6226e21b52b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lab1/src/API/itineraryAPI/TravelItinerary.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1/src/API/itineraryAPI/TravelItinerary.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lab1/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1/src/test.py" afterDir="false" />
-    </list>
+    <list default="true" id="903b0d53-87c8-44b4-9fb4-d6226e21b52b" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +13,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Lab1/src/API/itineraryAPI/TravelItinerary.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="226">
-              <caret line="50" column="4" selection-start-line="50" selection-start-column="4" selection-end-line="50" selection-end-column="4" />
+            <state relative-caret-position="510">
+              <caret line="66" column="30" selection-start-line="66" selection-start-column="30" selection-end-line="66" selection-end-column="30" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -48,7 +44,7 @@
         <entry file="file://$PROJECT_DIR$/Lab1/src/test.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="255">
-              <caret line="15" column="12" lean-forward="true" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+              <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -99,8 +95,8 @@
         <option value="$PROJECT_DIR$/Lab1/src/API/config.properties" />
         <option value="$PROJECT_DIR$/Lab1/src/settings.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/Lab1/src/test.py" />
         <option value="$PROJECT_DIR$/Lab1/src/API/itineraryAPI/TravelItinerary.py" />
+        <option value="$PROJECT_DIR$/Lab1/src/test.py" />
       </list>
     </option>
   </component>
@@ -126,6 +122,12 @@
               <item name="planificator-vacanta-mirpr" type="b2602c69:ProjectViewProjectNode" />
               <item name="planificator-vacanta-mirpr" type="462c0819:PsiDirectoryNode" />
               <item name="Lab1" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="planificator-vacanta-mirpr" type="b2602c69:ProjectViewProjectNode" />
+              <item name="planificator-vacanta-mirpr" type="462c0819:PsiDirectoryNode" />
+              <item name="Lab1" type="462c0819:PsiDirectoryNode" />
+              <item name=".idea" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="planificator-vacanta-mirpr" type="b2602c69:ProjectViewProjectNode" />
@@ -225,12 +227,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1572859585659</updated>
-      <workItem from="1572859595064" duration="11093000" />
+      <workItem from="1572859595064" duration="12118000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="11093000" />
+    <option name="totallyTimeSpent" value="12118000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -297,13 +299,6 @@
     <entry file="file://$PROJECT_DIR$/Lab1/src/gui/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/Lab1/src/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="89" selection-start-line="1" selection-start-column="89" selection-end-line="1" selection-end-column="89" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -314,14 +309,21 @@
     <entry file="file://$PROJECT_DIR$/Lab1/src/test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
-          <caret line="15" column="12" lean-forward="true" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+          <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lab1/src/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="89" selection-start-line="1" selection-start-column="89" selection-end-line="1" selection-end-column="89" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Lab1/src/API/itineraryAPI/TravelItinerary.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="50" column="4" selection-start-line="50" selection-start-column="4" selection-end-line="50" selection-end-column="4" />
+        <state relative-caret-position="510">
+          <caret line="66" column="30" selection-start-line="66" selection-start-column="30" selection-end-line="66" selection-end-column="30" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
