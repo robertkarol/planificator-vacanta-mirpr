@@ -11,4 +11,6 @@ ti.add_visit(l[0], "2019-11-09", "01:00:32.6770000", 1)
 ti.add_visit(l[1], "2019-11-09", "02:00:32.6770000", 2)
 ti.add_visit(l[2], "2019-11-09", "00:30:32.6770000", 3)
 
-ti.compute_route()
+visits, tranz = ti.compute_route()
+for v in visits:
+    print(v)

@@ -31,17 +31,40 @@ class Location:
         return not self == o
 
 
-class Instruction:
-    def __init__(self, start_date_time, end_date_time, start_location, end_location, distance = 0):
-        self.__start_date_time = start_date_time
-        self.__end_date_time = end_date_time
-        self.__start_location = start_location
-        self.__end_location = end_location
+class Visit:
+    def __init__(self, location, start_time, end_time):
+        self.__location = location
+        self.__start_time = start_time
+        self.__end_time = end_time
+
+    @property
+    def location(self):
+        return self.__location
+
+    @property
+    def start_time(self):
+        return self.__start_time
+
+    @property
+    def end_time(self):
+        return self.__end_time
+
+    def __str__(self) -> str:
+        return "Location: " + str(self.__location.latitude) + "\nFrom: " + self.__start_time + " To: " + self.__end_time
+
+
+class Transition:
+    def __init__(self, distance, duration):
         self.__distance = distance
+        self.__duration = duration
 
-    def is_transition(self):
-        return self.__distance == 0 and self.__start_location != self.__end_location
+    @property
+    def distance(self):
+        return self.__distance
 
+    @property
+    def duration(self):
+        return self.__duration
 
 class TravelItinerary:
     def __init__(self, start_date_time, end_date_time, start_location, end_location = None):
@@ -83,6 +106,15 @@ class TravelItinerary:
         }
         self.__to_visit.append(visit)
 
+    def __get_transitions(self, instructions):
+        return [Transition(i['distance'], i['duration']) for i in instructions if i['instructionType'] == 'TravelBetweenLocations']
+
+    def __get_visits(self, instructions):
+        return [Visit(Location(i['itineraryItem']['name'],
+                               i['itineraryItem']['location']['latitude'],
+                               i['itineraryItem']['location']['longitude']),
+                      i['startTime'], i['endTime']) for i in instructions if i['instructionType'] == 'VisitLocation']
+
     def compute_route(self):
         requestJSON = {
             'agents' : self.__agents,
@@ -91,4 +123,7 @@ class TravelItinerary:
         requestJSON = json.dumps(requestJSON)
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.OPTIMIZE_ITINERARY + settings.API_KEY, data=requestJSON, headers=headers)
-        print(response.text)
+        itinerary = json.loads(response.text)
+        instructions = itinerary['resourceSets'][0]['resources'][0]['agentItineraries'][0]['instructions']
+        return self.__get_visits(instructions), self.__get_transitions(instructions)
+        #(response.text)
