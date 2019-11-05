@@ -15,10 +15,15 @@ visits, tranz = ti.compute_route()
 visits, tranz = ti.compute_route()
 visits, tranz = ti.compute_route()
 
+
+print("Starting from: ")
 print(start.latitude)
 print(start.longitude)
 
 for i in range(len(visits)):
+    print("\nTransition:")
     print(tranz[i])
+    print("\nVisit: ")
     print(visits[i])
+    print()
 print(visits[-1])
