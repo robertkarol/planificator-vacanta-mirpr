@@ -5,8 +5,13 @@ from Lab1.src import settings
 
 
 class Location:
-
     def __init__(self, name, latitude, longitude):
+        """
+        Creates a location
+        :param name: Desired name for location
+        :param latitude: Latitude of location
+        :param longitude: Longitude of location
+        """
         self.__name = name
         self.__longitude = longitude
         self.__latitude = latitude
@@ -33,6 +38,12 @@ class Location:
 
 class Visit:
     def __init__(self, location: Location, start_time, end_time):
+        """
+        Creates a visit for a location
+        :param location: Location to be visited
+        :param start_time: Start time of the visit (must be "YYYY-MM-DDThh:mm:ss" format)
+        :param end_time: End time of the visit (must be "YYYY-MM-DDThh:mm:ss" format)
+        """
         self.__location = location
         self.__start_time = start_time
         self.__end_time = end_time
@@ -55,6 +66,11 @@ class Visit:
 
 class Transition:
     def __init__(self, distance, duration):
+        """
+        Creates a transition item
+        :param distance: Distance of transition with respect to traffic navigation
+        :param duration: Duration of transition with respect to traffic navigation
+        """
         self.__distance = distance
         self.__duration = duration
 
@@ -71,6 +87,13 @@ class Transition:
 
 class TravelItinerary:
     def __init__(self, start_date_time, end_date_time, start_location: Location, end_location: Location = None):
+        """
+        Creates a travel itinerary
+        :param start_date_time: Start time of the travel (must be "YYYY-MM-DDThh:mm:ss" format)
+        :param end_date_time: End time of the travel (must be "YYYY-MM-DDThh:mm:ss" format)
+        :param start_location: Location where the travel starts
+        :param end_location: Location where the travel ends
+        """
         self.__start_date_time = start_date_time
         self.__end_date_time = end_date_time
         self.__start_location = start_location
@@ -98,6 +121,15 @@ class TravelItinerary:
         self.__cached = None
 
     def add_visit(self, location: Location, date_of_visit, staying_time, priority, opening_time='00:00:00', closing_time='23:59:59'):
+        """
+        Adds a visit to a location specifying the details. If opening and closing are not specified, the location is open all the time
+        :param location: Location to visit
+        :param date_of_visit: Date of the visit (must be "YYYY-MM-DD" format)
+        :param staying_time: Staying time of the visit (must be "hh:mm:ss" format)
+        :param priority: A priority for scheduling this visit
+        :param opening_time: Opening time of the location (must be "hh:mm:ss" format)
+        :param closing_time: Closing time of the location (must be "hh:mm:ss" format)
+        """
         visit = {
             "name": location.name,
             "OpeningTime": date_of_visit + 'T' + opening_time,
@@ -122,8 +154,12 @@ class TravelItinerary:
                       i['startTime'], i['endTime']) for i in instructions if i['instructionType'] == 'VisitLocation']
 
     def compute_route(self):
+        """
+        Computes the travel itinerary
+        :return: 2 lists: one of visits and one of transitions. At each index in visit, in the corresponding item from transition resides the transition from previous visit to the current one
+        """
         if self.__modified and self.__cached == None:
-            print("Server req")
+            #print("Server req")
             requestJSON = {
                 'agents' : self.__agents,
                 'itineraryItems' : self.__to_visit
