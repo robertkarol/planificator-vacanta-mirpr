@@ -25,5 +25,10 @@ for i in range(len(visits)):
     print(tranz[i])
     print("\nVisit: ")
     print(visits[i])
-    print()
-print(visits[-1])
+
+print("\nTransition:")
+print(tranz[-1])
+
+print("\nEnding at: ")
+print(start.latitude)
+print(start.longitude)
