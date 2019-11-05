@@ -32,7 +32,7 @@ class Location:
 
 
 class Visit:
-    def __init__(self, location, start_time, end_time):
+    def __init__(self, location: Location, start_time, end_time):
         self.__location = location
         self.__start_time = start_time
         self.__end_time = end_time
@@ -66,8 +66,11 @@ class Transition:
     def duration(self):
         return self.__duration
 
+    def __str__(self) -> str:
+        return "Distance: " + str(self.__distance) + "\nDuration: " + self.__duration
+
 class TravelItinerary:
-    def __init__(self, start_date_time, end_date_time, start_location, end_location = None):
+    def __init__(self, start_date_time, end_date_time, start_location: Location, end_location: Location = None):
         self.__start_date_time = start_date_time
         self.__end_date_time = end_date_time
         self.__start_location = start_location
@@ -94,7 +97,7 @@ class TravelItinerary:
         self.__modified = True
         self.__cached = None
 
-    def add_visit(self, location, date_of_visit, staying_time, priority, opening_time='00:00:00', closing_time='23:59:59'):
+    def add_visit(self, location: Location, date_of_visit, staying_time, priority, opening_time='00:00:00', closing_time='23:59:59'):
         visit = {
             "name": location.name,
             "OpeningTime": date_of_visit + 'T' + opening_time,
@@ -135,4 +138,3 @@ class TravelItinerary:
             itinerary = self.__cached
         instructions = itinerary['resourceSets'][0]['resources'][0]['agentItineraries'][0]['instructions']
         return self.__get_visits(instructions), self.__get_transitions(instructions)
-        #(response.text)

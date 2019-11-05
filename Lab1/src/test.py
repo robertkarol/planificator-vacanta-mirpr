@@ -3,9 +3,8 @@ from Lab1.src.API.itineraryAPI.TravelItinerary import *
 l = [Location("loc1", 46.779792, 23.620796),
      Location("loc2", 46.766435, 23.589105),
      Location("loc3", 46.775976, 23.603794)]
-
-ti = TravelItinerary("2019-11-09T08:00:00", "2019-11-09T22:00:00",
-                Location("start", 46.774775, 23.621636), Location("start", 46.774775, 23.621636))
+start = Location("start", 46.774775, 23.621636)
+ti = TravelItinerary("2019-11-09T08:00:00", "2019-11-09T22:00:00", start, start)
 
 ti.add_visit(l[0], "2019-11-09", "01:00:32.6770000", 1)
 ti.add_visit(l[1], "2019-11-09", "02:00:32.6770000", 2)
@@ -15,5 +14,11 @@ visits, tranz = ti.compute_route()
 visits, tranz = ti.compute_route()
 visits, tranz = ti.compute_route()
 visits, tranz = ti.compute_route()
-for v in visits:
-    print(v)
+
+print(start.latitude)
+print(start.longitude)
+
+for i in range(len(visits)):
+    print(tranz[i])
+    print(visits[i])
+print(visits[-1])
