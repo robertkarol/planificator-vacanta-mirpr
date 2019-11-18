@@ -64,6 +64,37 @@ class Location:
         return '23:59:59'
 
     @staticmethod
+    def __get_schedule(location):
+        schedule = {
+            'Monday': [],
+            'Tuesday': [],
+            'Wednesday': [],
+            'Thursday': [],
+            'Friday': [],
+            'Saturday': [],
+            'Sunday': []
+        }
+        if 'hours' in location:
+            for h in location['hours']:
+                day = ""
+                if 'mon' in h['key']:
+                    day = 'Monday'
+                if 'tue' in h['key']:
+                    day = 'Tuesday'
+                if 'wed' in h['key']:
+                    day = 'Wednesday'
+                if 'thu' in h['key']:
+                    day = 'Thursday'
+                if 'fri' in h['key']:
+                    day = 'Friday'
+                if 'sat' in h['key']:
+                    day = 'Saturday'
+                if 'sun' in h['key']:
+                    day = 'Sunday'
+                schedule[day].append(h['value'])
+        return schedule
+
+    @staticmethod
     def get_locations_by_query(query_str):
         headers = {'content-type': 'application/json'}
         query_str = urllib.parse.quote(query_str)
@@ -72,8 +103,14 @@ class Location:
         locations = json.loads(response.text)
         locations_list = []
         for l in locations['data']:
-            #TODO add other elemets from response
-            locations_list.append(Location(l['name'], l['location']['latitude'], l['location']['longitude']))
+            schedule = Location.__get_schedule(l)
+            locations_list.append(Location(l['name'],
+                                           l['location']['latitude'],
+                                           l['location']['longitude'],
+                                           l['location']['country'] if 'country' in l['location'] else "",
+                                           l['location']['city'] if 'city' in l['location'] else "",
+                                           l['location']['street'] if 'street' in l['location'] else "",
+                                           schedule))
         return locations_list
 
     def __eq__(self, o: object) -> bool:
