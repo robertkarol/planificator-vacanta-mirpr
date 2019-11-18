@@ -2,88 +2,10 @@ import json
 import requests
 
 from API import settings
+from API.ItineraryAPI.Location import Location
+from API.ItineraryAPI.Transition import Transition
+from API.ItineraryAPI.Visit import Visit
 
-
-class Location:
-    def __init__(self, name, latitude, longitude):
-        """
-        Creates a location
-        :param name: Desired name for location
-        :param latitude: Latitude of location
-        :param longitude: Longitude of location
-        """
-        self.__name = name
-        self.__longitude = longitude
-        self.__latitude = latitude
-
-    @property
-    def name(self):
-        return self.__name
-
-    @property
-    def longitude(self):
-        return self.__longitude
-
-    @property
-    def latitude(self):
-        return self.__latitude
-
-    def __eq__(self, o: object) -> bool:
-        if o is not Location: return False
-        return self.latitude == o.latitude and self.longitude == o.longitude
-
-    def __ne__(self, o: object) -> bool:
-        return not self == o
-
-
-class Visit:
-    def __init__(self, location: Location, start_time, end_time):
-        """
-        Creates a visit for a location
-        :param location: Location to be visited
-        :param start_time: Start time of the visit (must be "YYYY-MM-DDThh:mm:ss" format)
-        :param end_time: End time of the visit (must be "YYYY-MM-DDThh:mm:ss" format)
-        """
-        self.__location = location
-        self.__start_time = start_time
-        self.__end_time = end_time
-
-    @property
-    def location(self):
-        return self.__location
-
-    @property
-    def start_time(self):
-        return self.__start_time
-
-    @property
-    def end_time(self):
-        return self.__end_time
-
-    def __str__(self) -> str:
-        return "Location: " + str(self.__location.latitude) + " " + str(self.__location.longitude) + "\nFrom: " + self.__start_time + " To: " + self.__end_time
-
-
-class Transition:
-    def __init__(self, distance, duration):
-        """
-        Creates a transition item
-        :param distance: Distance of transition with respect to traffic navigation
-        :param duration: Duration of transition with respect to traffic navigation
-        """
-        self.__distance = distance
-        self.__duration = duration
-
-    @property
-    def distance(self):
-        return self.__distance
-
-    @property
-    def duration(self):
-        return self.__duration
-
-    def __str__(self) -> str:
-        return "Distance: " + str(self.__distance) + "\nDuration: " + self.__duration
 
 class TravelItinerary:
     def __init__(self, start_date_time, end_date_time, start_location: Location, end_location: Location = None):
@@ -120,7 +42,7 @@ class TravelItinerary:
         self.__modified = True
         self.__cached = None
 
-    def add_visit(self, location: Location, date_of_visit, staying_time, priority, opening_time='00:00:00', closing_time='23:59:59'):
+    def add_visit(self, location: Location, date_of_visit, staying_time, priority):
         """
         Adds a visit to a location specifying the details. If opening and closing are not specified, the location is open all the time
         :param location: Location to visit
@@ -132,8 +54,8 @@ class TravelItinerary:
         """
         visit = {
             "name": location.name,
-            "OpeningTime": date_of_visit + 'T' + opening_time,
-            "ClosingTime": date_of_visit + 'T' + closing_time,
+            "OpeningTime": date_of_visit + 'T' + location.opening_time,
+            "ClosingTime": date_of_visit + 'T' + location.closing_time,
             "DwellTime": staying_time,
             "Priority": int(priority),
             "Location": {
