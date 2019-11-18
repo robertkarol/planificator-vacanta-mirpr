@@ -1,4 +1,4 @@
-#!"D:\Facultate\Semestrul 5\Metode inteligente\Laborator\Lab1\Scripts\python.exe"
+#!"D:\Facultate\Semestrul 5\Metode inteligente\Laborator\GUI\Scripts\python.exe"
 # EASY-INSTALL-ENTRY-SCRIPT: 'pip==10.0.1','console_scripts','pip'
 __requires__ = 'pip==10.0.1'
 import re

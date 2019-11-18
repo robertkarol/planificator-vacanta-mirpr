@@ -1,4 +1,4 @@
-from Lab1.src.API.itineraryAPI.TravelItinerary import *
+from API.ItineraryAPI.TravelItinerary import *
 
 l = [Location("loc1", 46.779792, 23.620796),
      Location("loc2", 46.766435, 23.589105),
@@ -33,7 +33,6 @@ print("\nEnding at: ")
 print(start.latitude)
 print(start.longitude)
 
-import webbrowser
 import wikipedia
 
 # query = query.replace("Wikipedia", " ")

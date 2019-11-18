@@ -1,7 +1,7 @@
 import json
 import requests
 
-from Lab1.src import settings
+from API import settings
 
 
 class Location:
@@ -61,7 +61,7 @@ class Visit:
         return self.__end_time
 
     def __str__(self) -> str:
-        return "Location: " + str(self.__location.latitude) + "\nFrom: " + self.__start_time + " To: " + self.__end_time
+        return "Location: " + str(self.__location.latitude) + " " + str(self.__location.longitude) + "\nFrom: " + self.__start_time + " To: " + self.__end_time
 
 
 class Transition:
