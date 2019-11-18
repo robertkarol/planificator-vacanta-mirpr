@@ -1,4 +1,11 @@
+import json
+import urllib
+
 import dateutil.parser
+import requests
+
+from API import settings
+
 
 class Location:
     def __init__(self, name, latitude, longitude, country=None, city=None, street=None, schedule=None):
@@ -56,9 +63,63 @@ class Location:
             return self.__schedule[date.weekday()][1]
         return '23:59:59'
 
+    @staticmethod
+    def __get_schedule(location):
+        schedule = {
+            'Monday': [],
+            'Tuesday': [],
+            'Wednesday': [],
+            'Thursday': [],
+            'Friday': [],
+            'Saturday': [],
+            'Sunday': []
+        }
+        if 'hours' in location:
+            for h in location['hours']:
+                day = ""
+                if 'mon' in h['key']:
+                    day = 'Monday'
+                if 'tue' in h['key']:
+                    day = 'Tuesday'
+                if 'wed' in h['key']:
+                    day = 'Wednesday'
+                if 'thu' in h['key']:
+                    day = 'Thursday'
+                if 'fri' in h['key']:
+                    day = 'Friday'
+                if 'sat' in h['key']:
+                    day = 'Saturday'
+                if 'sun' in h['key']:
+                    day = 'Sunday'
+                schedule[day].append(h['value'])
+        return schedule
+
+    @staticmethod
+    def get_locations_by_query(query_str):
+        headers = {'content-type': 'application/json'}
+        query_str = urllib.parse.quote(query_str)
+        response = requests.get(settings.LOCATIONS % (query_str, settings.FACEBOOK_API_KEY), headers=headers)
+        if response.status_code != 200: return []
+        locations = json.loads(response.text)
+        locations_list = []
+        for l in locations['data']:
+            schedule = Location.__get_schedule(l)
+            locations_list.append(Location(l['name'],
+                                           l['location']['latitude'],
+                                           l['location']['longitude'],
+                                           l['location']['country'] if 'country' in l['location'] else "",
+                                           l['location']['city'] if 'city' in l['location'] else "",
+                                           l['location']['street'] if 'street' in l['location'] else "",
+                                           schedule))
+        return locations_list
+
     def __eq__(self, o: object) -> bool:
         if o is not Location: return False
         return self.latitude == o.latitude and self.longitude == o.longitude
 
     def __ne__(self, o: object) -> bool:
         return not self == o
+
+    def __str__(self) -> str:
+        return self.__name + " " + str(self.__latitude) + " " + str(self.__longitude)
+

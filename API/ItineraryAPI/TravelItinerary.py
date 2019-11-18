@@ -88,7 +88,7 @@ class TravelItinerary:
             }
             requestJSON = json.dumps(requestJSON)
             headers = {'content-type': 'application/json'}
-            response = requests.post(settings.OPTIMIZE_ITINERARY + settings.API_KEY, data=requestJSON, headers=headers)
+            response = requests.post(settings.OPTIMIZE_ITINERARY % settings.MICROSOFT_API_KEY, data=requestJSON, headers=headers)
             itinerary = json.loads(response.text)
             self.__cached = itinerary
             self.__modified = False
