@@ -54,8 +54,8 @@ class TravelItinerary:
         """
         visit = {
             "name": location.name,
-            "OpeningTime": date_of_visit + 'T' + location.opening_time,
-            "ClosingTime": date_of_visit + 'T' + location.closing_time,
+            "OpeningTime": date_of_visit + 'T' + location.opening_time(date_of_visit),
+            "ClosingTime": date_of_visit + 'T' + location.closing_time(date_of_visit),
             "DwellTime": staying_time,
             "Priority": int(priority),
             "Location": {

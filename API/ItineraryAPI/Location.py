@@ -1,5 +1,7 @@
+import dateutil.parser
+
 class Location:
-    def __init__(self, name, latitude, longitude, country=None, city=None, street=None, opening_time='00:00:00', closing_time='23:59:59'):
+    def __init__(self, name, latitude, longitude, country=None, city=None, street=None, schedule=None):
         """
         Creates a location
         :param name: Desired name for location
@@ -8,8 +10,7 @@ class Location:
         :param country: Country of location
         :param city: City of location
         :param street: Street of location
-        :param opening_time: Opening time of the location (must be "hh:mm:ss" format)
-        :param closing_time: Closing time of the location (must be "hh:mm:ss" format)
+        :param schedule: A dictionary with keys being days of the week (like "Wednesday") and values being tuples of hours, such as('00:00:0','23:59:59')
         """
         self.__name = name
         self.__longitude = longitude
@@ -17,8 +18,7 @@ class Location:
         self.__country = country or ""
         self.__city = city or ""
         self.__street = street or ""
-        self.__opening_time = opening_time
-        self.__closing_time = closing_time
+        self.__schedule = schedule
 
     @property
     def name(self):
@@ -44,13 +44,17 @@ class Location:
     def street(self):
         return self.__street
 
-    @property
-    def opening_time(self):
-        return self.__opening_time
+    def opening_time(self, date):
+        if self.__schedule:
+            date = dateutil.parser.parse(date)
+            return self.__schedule[date.weekday()][0]
+        return '00:00:00'
 
-    @property
-    def closing_time(self):
-        return self.__closing_time
+    def closing_time(self, date):
+        if self.__schedule:
+            date = dateutil.parser.parse(date)
+            return self.__schedule[date.weekday()][1]
+        return '23:59:59'
 
     def __eq__(self, o: object) -> bool:
         if o is not Location: return False
@@ -58,4 +62,3 @@ class Location:
 
     def __ne__(self, o: object) -> bool:
         return not self == o
-
