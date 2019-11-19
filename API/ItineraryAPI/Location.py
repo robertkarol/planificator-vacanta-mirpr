@@ -2,6 +2,7 @@ import json
 import urllib
 
 import dateutil.parser
+import calendar
 import requests
 
 from API import settings
@@ -17,7 +18,7 @@ class Location:
         :param country: Country of location
         :param city: City of location
         :param street: Street of location
-        :param schedule: A dictionary with keys being days of the week (like "Wednesday") and values being tuples of hours, such as('00:00:0','23:59:59')
+        :param schedule: A dictionary with keys being days of the week (like "Wednesday") and values being a list of hours
         """
         self.__name = name
         self.__longitude = longitude
@@ -52,15 +53,15 @@ class Location:
         return self.__street
 
     def opening_time(self, date):
-        if self.__schedule:
-            date = dateutil.parser.parse(date)
-            return self.__schedule[date.weekday()][0]
+        date = dateutil.parser.parse(date)
+        if self.__schedule and len(self.__schedule[calendar.day_name[date.weekday()]]) > 0:
+            return self.__schedule[calendar.day_name[date.weekday()]][0]
         return '00:00:00'
 
     def closing_time(self, date):
-        if self.__schedule:
-            date = dateutil.parser.parse(date)
-            return self.__schedule[date.weekday()][1]
+        date = dateutil.parser.parse(date)
+        if self.__schedule and len(self.__schedule[calendar.day_name[date.weekday()]]) > 0:
+            return self.__schedule[calendar.day_name[date.weekday()]][1]
         return '23:59:59'
 
     @staticmethod
