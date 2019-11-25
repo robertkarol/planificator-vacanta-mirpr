@@ -8,6 +8,7 @@ from API.ItineraryAPI.Visit import Visit
 
 
 class TravelItinerary:
+    # TODO: Add more configurable aspects to the itinerary
     def __init__(self, start_date_time, end_date_time, start_location: Location, end_location: Location = None):
         """
         Creates a travel itinerary
@@ -75,6 +76,13 @@ class TravelItinerary:
                                i['itineraryItem']['location']['longitude']),
                       i['startTime'], i['endTime']) for i in instructions if i['instructionType'] == 'VisitLocation']
 
+    def __build_map_waypoint(self, location: Location, index):
+        prefix = ""
+        if index > 1:
+            prefix = "&"
+        index = str(index)
+        return prefix + settings.MAP_WAYPOINT % (index, location.latitude, location.longitude, index)
+
     def compute_route(self):
         """
         Computes the travel itinerary
@@ -88,11 +96,29 @@ class TravelItinerary:
             }
             requestJSON = json.dumps(requestJSON)
             headers = {'content-type': 'application/json'}
+            print(requestJSON)
+            # TODO: Handle response codes different than success
             response = requests.post(settings.OPTIMIZE_ITINERARY % settings.MICROSOFT_API_KEY, data=requestJSON, headers=headers)
             itinerary = json.loads(response.text)
+            print(response.text)
             self.__cached = itinerary
             self.__modified = False
         else:
             itinerary = self.__cached
         instructions = itinerary['resourceSets'][0]['resources'][0]['agentItineraries'][0]['instructions']
         return self.__get_visits(instructions), self.__get_transitions(instructions)
+
+    def compute_route_and_get_map(self):
+        """
+        Computes the travel itinerary and returns it alongside a map containing the planned itinerary
+        :return: 2 lists: one of visits and one of transitions. At each index in visit, in the corresponding item from transition resides the transition from previous visit to the current one.
+        Returns also a stream corresponding to an image of a map with scheduled visits
+        """
+        visits, transitions = self.compute_route()
+        waypoints = self.__build_map_waypoint(self.__start_location, 1) + self.__build_map_waypoint(self.__end_location, 2)
+        for i in range(len(visits)):
+            waypoints += self.__build_map_waypoint(visits[i].location, i + 3)
+        # TODO: Handle response codes different than success and add more options of visualizing the map
+        response = requests.get(settings.GET_MAP % (waypoints, settings.MICROSOFT_API_KEY), stream=True)
+        return visits, transitions, response.raw
+
