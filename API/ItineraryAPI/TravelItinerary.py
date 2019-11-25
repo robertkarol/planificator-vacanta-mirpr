@@ -97,8 +97,11 @@ class TravelItinerary:
             requestJSON = json.dumps(requestJSON)
             headers = {'content-type': 'application/json'}
             print(requestJSON)
-            # TODO: Handle response codes different than success
             response = requests.post(settings.OPTIMIZE_ITINERARY % settings.MICROSOFT_API_KEY, data=requestJSON, headers=headers)
+            if response.status_code >= 400 and response.status_code < 500:
+                raise ValueError("Bad request or cannot schedule the desired itinerary within the given period")
+            if response.status_code >= 500:
+                raise ValueError("The server encountered issues")
             itinerary = json.loads(response.text)
             print(response.text)
             self.__cached = itinerary
@@ -118,7 +121,11 @@ class TravelItinerary:
         waypoints = self.__build_map_waypoint(self.__start_location, 1) + self.__build_map_waypoint(self.__end_location, 2)
         for i in range(len(visits)):
             waypoints += self.__build_map_waypoint(visits[i].location, i + 3)
-        # TODO: Handle response codes different than success and add more options of visualizing the map
+        # TODO: Add more options of visualizing the map
         response = requests.get(settings.GET_MAP % (waypoints, settings.MICROSOFT_API_KEY), stream=True)
+        if response.status_code >= 400 and response.status_code < 500:
+            raise ValueError("Bad request or cannot schedule the desired itinerary within the given period")
+        if response.status_code >= 500:
+            raise ValueError("The server encountered issues")
         return visits, transitions, response.raw
 
