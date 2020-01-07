@@ -25,7 +25,7 @@ def getFeatFromPicture(url):
     filtered_out_words = ['hotel', 'sky', 'color', 'building', 'slope', 'road']
     for r in result:
         print(r['class'])
-        list_result.append(r['class'])
+        list_result.append([r['class'], r['score']])
 
     return filter(list_result, filtered_out_words)
 
@@ -35,7 +35,7 @@ def filter(results, filtered_words):
     for result in results:
         ok = 1
         for word in filtered_words:
-            if word in result.lower():
+            if word in result[0].lower():
                 ok = 0
         if ok == 1:
             new_results.append(result)

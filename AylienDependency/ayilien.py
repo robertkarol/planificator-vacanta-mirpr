@@ -56,12 +56,12 @@ class AYLIENClient(object):
 
 #text_api = AYLIENClient()
 
-# query = 'John is a very good football player!'
-query = 'I wish to go with my family in a warm place where my children can go to the pool and where my husband can play poker. Also I want this place to be in the United States. Somewhere in California should do the trick. We would like to spend 10 thousand dollars and we want to go this summer.'
-
-
-'https://www.tripadvisor.com/Search?singleSearchBox=true&geo=1&searchNearby=&pid=3826&redirect=&startTime=1575150818348&uiOrigin=MASTHEAD&q=chalet&supportedSearchTypes=find_near_stand_alone_query&enableNearPage=true&returnTo=__2F__&searchSessionId=D180AF876856AFA7AB817DFF417058F41575150808534ssid&social_typeahead_2018_feature=true&sid=D180AF876856AFA7AB817DFF417058F41575150824644&blockRedirect=true&ssrc=h&rf=1'
-# query = 'Where is Bucharest'
+# # query = 'John is a very good football player!'
+# query = 'I wish to go with my family in a warm place where my children can go to the pool and where my husband can play poker. Also I want this place to be in the United States. Somewhere in California should do the trick. We would like to spend 10 thousand dollars and we want to go this summer.'
+#
+#
+# 'https://www.tripadvisor.com/Search?singleSearchBox=true&geo=1&searchNearby=&pid=3826&redirect=&startTime=1575150818348&uiOrigin=MASTHEAD&q=chalet&supportedSearchTypes=find_near_stand_alone_query&enableNearPage=true&returnTo=__2F__&searchSessionId=D180AF876856AFA7AB817DFF417058F41575150808534ssid&social_typeahead_2018_feature=true&sid=D180AF876856AFA7AB817DFF417058F41575150824644&blockRedirect=true&ssrc=h&rf=1'
+# # query = 'Where is Bucharest'
 # file_name = 'Sentiment_Analysis_of_{}_Tweets_About_{}.csv'.format(1, query)
 
 # response = text_api.get_tweet_sentiment(query)
