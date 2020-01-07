@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import PySimpleGUIWeb as sg
 import os
 
 import numpy as np
@@ -231,10 +231,10 @@ window = sg.Window('HOLIday').Layout(layout)
 
 
 def main():
-    try:
-        window.enable()
-    except(Exception):
-        print("NOW")
+    # try:
+    #     window.enable()
+    # except(Exception):
+    #     print("NOW")
 
     while True:
         event, values = window.Read()
@@ -243,15 +243,15 @@ def main():
             break
 
         if event in ('Search with text'):
-            window.disable()
+            # window.disable()
             openWindowTextSearch()
 
         if event in ('Search with image'):
-            window.disable()
+            # window.disable()
             openWindowImageSearch()
 
         if event in ('Create a route'):
-            window.disable()
+            # window.disable()
             openWindowRoutesSearch()
 
 
