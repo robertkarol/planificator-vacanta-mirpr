@@ -4,6 +4,7 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson.natural_language_understanding_v1 import Features, RelationsOptions, KeywordsOptions, EntitiesOptions
 
 from AylienDependency.ayilien import AYLIENClient
+from NLPAylienAndWatson.EntityProb import EntityProb
 
 
 def getFeatFromText(text):
@@ -34,9 +35,10 @@ def getFeatFromText(text):
 
     for jso in jsonResponse:
         if jso['relevance'] > 0.5:
-            list_keywords.append(jso['text'])
+            list_keywords.append(EntityProb(jso['text'], jso['relevance']))
 
-    print(list_keywords)
+    print([obj.getEntity() for obj in list_keywords])
+
     return list_keywords
 
     #features=Features(keywords=KeywordsOptions(sentiment=True,emotion=True,limit=5))).get_result()
