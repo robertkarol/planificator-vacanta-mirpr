@@ -193,6 +193,7 @@ def openWindowImageSearch():
             break
         elif eventOperation in ('Search for me'):
             windowOperation.close()
+            print(valuesOperation[0])
             searchByImageAlgorithm(valuesOperation[0])
 
         if valuesOperation[0] != "path":

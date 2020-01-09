@@ -2,7 +2,7 @@ import webbrowser
 
 from aylienapiclient import textapi
 import csv
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 
 # c = textapi.Client("e14bf0bb", "bb2b6dbbfd5f6714ecbf6fca6141dd92")
 # s = c.Sentiment({'text': 'John is a very good football player!'})
