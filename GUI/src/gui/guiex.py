@@ -6,9 +6,6 @@ import pandas
 import folium
 
 from API.ItineraryAPI.Location import Location
-# import panda as pd
-# import numpy as np
-# import folium
 
 def searchByTextAlgorithm(text):
     # do stuff
