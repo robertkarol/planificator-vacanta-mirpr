@@ -1,14 +1,13 @@
 import json
 import requests
 
-from API import settings
+import settings
 from API.ItineraryAPI.Location import Location
 from API.ItineraryAPI.Transition import Transition
 from API.ItineraryAPI.Visit import Visit
 
 
 class TravelItinerary:
-    # TODO: Add more configurable aspects to the itinerary
     def __init__(self, start_date_time, end_date_time, start_location: Location, end_location: Location = None):
         """
         Creates a travel itinerary
@@ -17,6 +16,9 @@ class TravelItinerary:
         :param start_location: Location where the travel starts
         :param end_location: Location where the travel ends
         """
+        if start_date_time.split("T")[0] != end_date_time.split("T")[0]:
+            raise ValueError("Trip must end the same day it started!")
+
         self.__start_date_time = start_date_time
         self.__end_date_time = end_date_time
         self.__start_location = start_location
@@ -43,7 +45,7 @@ class TravelItinerary:
         self.__modified = True
         self.__cached = None
 
-    def add_visit(self, location: Location, date_of_visit, staying_time, priority):
+    def add_visit(self, location: Location, staying_time, priority):
         """
         Adds a visit to a location specifying the details. If opening and closing are not specified, the location is open all the time
         :param location: Location to visit
@@ -53,6 +55,7 @@ class TravelItinerary:
         :param opening_time: Opening time of the location (must be "hh:mm:ss" format)
         :param closing_time: Closing time of the location (must be "hh:mm:ss" format)
         """
+        date_of_visit = self.__date_of_itinerary()
         visit = {
             "name": location.name,
             "OpeningTime": date_of_visit + 'T' + location.opening_time(date_of_visit),
@@ -66,6 +69,9 @@ class TravelItinerary:
         }
         self.__to_visit.append(visit)
         self.__modified = True
+
+    def __date_of_itinerary(self):
+        return self.__start_date_time.split("T")[0]
 
     def __get_transitions(self, instructions):
         return [Transition(i['distance'], i['duration']) for i in instructions if i['instructionType'] == 'TravelBetweenLocations']
