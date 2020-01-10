@@ -1,5 +1,5 @@
 from NLPAylienAndWatson.TextRecognition import getFeatFromText, getLocationDateAndMoney
-
+from NLPAylienAndWatson.TextObj import TextObj
 class ServiceText:
     def __init__(self):
         pass
