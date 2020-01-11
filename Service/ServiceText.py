@@ -68,6 +68,70 @@ class ServiceText:
         for label in objReturned.getListOfObjectsWithProb():
             print(label)
         return objReturned
+    def pushToFile(extension, list_objects, list_cities):
+        for city in list_cities:
+            with open(city + extension, 'r', encoding="utf8") as content_file:
+                content = content_file.read()
+                # print(content)
+                obj = textToLabel(content)
+                list_objects.append(obj)
+
+        with open('labelsFromWebTexts', 'wb') as f:
+            pickle.dump(list_objects, f)
+
+
+    def extractFromWebFiles(onParagraphs=False):
+        extension = '.txt'
+        list_objects = []
+        list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
+                       'Barcelona', 'Bern', 'St.Petersburg']
+        if not onParagraphs:
+            pushToFile(extension, list_objects, list_cities)
+        else:
+            for city in list_cities:
+                with open(city + extension, 'r', encoding="utf8") as content_file:
+                    content = content_file.read()
+                t = content.split(".")
+                if len(t) > 8:
+                    print(len(t))
+                    texts = []
+                    txt = ""
+                    for i in range(len(t)):
+                        txt = txt + t[i] + "."
+                        if (i % 4 == 0 and i != 0) or i == len(t) - 1:
+                            if i == len(t) - 1:
+                                txt = txt[:-1]
+                            texts.append(txt)
+                            txt = ""
+
+                    print(texts)
+                    list_labelsForTextContent = []
+                    for text in texts:
+                        list_labelsForTextContent.append(textToLabel(text))
+
+                    objT = TextObj([], '', '', '')
+                    for obj in list_labelsForTextContent:
+                        objT.setList(objT.getListOfObjectsWithProb() + obj.getListOfObjectsWithProb())
+                        objT.setBudget(objT.getBudget() + obj.getBudget())
+                        objT.setDate(objT.getDate() + obj.getDate())
+                        objT.setLocation(objT.getLocation() + obj.getLocation())
+                        list_objects.append(obj)
+
+                else:
+                    obj = textToLabel(content)
+                    list_objects.append(obj)
+
+            with open('labelsFromWebTexts', 'wb') as f:
+                pickle.dump(list_objects, f)
+
+
+    def getSavedLabelsFromFile():
+        with open('labelsFromWebTexts', 'rb') as f:
+            listTextObjs = pickle.load(f)
+        list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
+                       'Barcelona', 'Bern', 'St.Petersburg']
+        return [listTextObjs, list_cities]
+
 
     def LabelToLabelComparison(self, labelList):
         pass
