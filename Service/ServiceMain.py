@@ -75,7 +75,7 @@ class ServiceMain:
     # the param is a dictionary with the key being a Location and the value being the importance level
     # returns an image and an itinerary of the trip
     def getRouteByLocationsAndImportance(self,importanceLocationDictionary):
-        itinerary,image=self.__servRoute.getRouteByLocationsAndImportance(importanceLocationDictionary)
+        itinerary,image=self.__servRoute.getObjectivesVisitsRoute(importanceLocationDictionary)
         return itinerary,image
 
 
