@@ -2,14 +2,16 @@ from NLPAylienAndWatson.TextRecognition import getFeatFromText, getLocationDateA
 from NLPAylienAndWatson.TextObj import TextObj
 from Scrapping.textData import *
 import pickle
+
+from TextSimilarity.text_sim_api import get_top_similar_texts
+
+
 class ServiceText:
     def __init__(self):
         pass
 
-
-
     def TextToTextAlgorithm(self, userText):
-        pass
+        return get_top_similar_texts(userText)
 
     def extractLabelsAlgorithm(self, userText):
         # text = "I wish to go with my family in a warm place where my children can go to the pool and where my husband
@@ -30,17 +32,13 @@ class ServiceText:
         #         for el in list_searchEntities:
         #             thisset.add(el)
 
-        result = getLocationDateAndMoney(text)
+        result = getLocationDateAndMoney(userText)
 
         location = result[0]
         date = result[1]
         money = result[2]
 
-        print()
-        print()
-        print()
-
-        print("Final Keywords:")
+        print("\n\n\nFinal Keywords:")
         # print(thisset)
 
         print("Keywords:")
