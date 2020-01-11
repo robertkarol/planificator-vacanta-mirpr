@@ -5,7 +5,7 @@ import dateutil.parser
 import calendar
 import requests
 
-from API import settings
+import settings
 
 
 class Location:
@@ -96,7 +96,7 @@ class Location:
         return schedule
 
     @staticmethod
-    def get_locations_by_query(query_str):
+    def get_locations_by_query(query_str, city=None):
         headers = {'content-type': 'application/json'}
         query_str = urllib.parse.quote(query_str)
         response = requests.get(settings.LOCATIONS % (query_str, settings.FACEBOOK_API_KEY), headers=headers)
@@ -105,13 +105,15 @@ class Location:
         locations_list = []
         for l in locations['data']:
             schedule = Location.__get_schedule(l)
-            locations_list.append(Location(l['name'],
+            location = Location(l['name'],
                                            l['location']['latitude'],
                                            l['location']['longitude'],
                                            l['location']['country'] if 'country' in l['location'] else "",
                                            l['location']['city'] if 'city' in l['location'] else "",
                                            l['location']['street'] if 'street' in l['location'] else "",
-                                           schedule))
+                                           schedule)
+            if city and location.city == city:
+                locations_list.append(location)
         return locations_list
 
     def __eq__(self, o: object) -> bool:
