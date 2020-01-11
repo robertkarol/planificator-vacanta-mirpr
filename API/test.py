@@ -11,9 +11,9 @@ l = [Location.get_locations_by_query("fsega")[0],
 start = Location.get_locations_by_query("economica 2")[0]
 ti = TravelItinerary("2019-11-09T08:00:00", "2019-11-09T22:00:00", start, start)
 
-ti.add_visit(l[0], "2019-11-09", "02:00:00", 1)
-ti.add_visit(l[1], "2019-11-09", "01:00:00", 2)
-ti.add_visit(l[2], "2019-11-09", "01:00:00", 3)
+ti.add_visit(l[0], "02:00:00", 1)
+ti.add_visit(l[1], "01:00:00", 2)
+ti.add_visit(l[2], "01:00:00", 3)
 
 #visits, tranz = ti.compute_route()
 visits, tranz, map = ti.compute_route_and_get_map()
