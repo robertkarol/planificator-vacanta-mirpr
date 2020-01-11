@@ -1,5 +1,7 @@
 from NLPAylienAndWatson.TextRecognition import getFeatFromText, getLocationDateAndMoney
 from NLPAylienAndWatson.TextObj import TextObj
+from Scrapping.textData import *
+import pickle
 class ServiceText:
     def __init__(self):
         pass
