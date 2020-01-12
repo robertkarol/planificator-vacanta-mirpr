@@ -8,7 +8,7 @@ import pickle
 import Levenshtein
 from nltk.corpus import wordnet
 
-# from TextSimilarity.text_sim_api import get_top_similar_texts
+from TextSimilarity.text_sim_api import *
 
 
 class ServiceText:
@@ -17,8 +17,8 @@ class ServiceText:
         self.list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
                        'Barcelona', 'Bern', 'St.Petersburg']
 
-    # def TextToTextAlgorithm(self, userText):
-    #     return get_top_similar_texts(userText)
+    def TextToTextAlgorithm(self, userText):
+        return TextToText.get_top_similar_texts(userText)
 
     def extractLabelsAlgorithm(self, userText):
         # text = "I wish to go with my family in a warm place where my children can go to the pool and where my husband
@@ -26,19 +26,6 @@ class ServiceText:
         # do the " \ "trick. We would like to spend 10 thousand dollars and we want to go this summer. "
 
         list_searchEntities = getFeatFromText(userText)
-        # thisset = {'apple'}
-        #
-        # q = ""
-        # texts = text.split(".")
-        # print(texts)
-        # for txt in texts:
-        #     if txt:
-        #         list_searchEntities = getFeatFromText(txt)
-        #         print("Keywords:")
-        #         print(list_searchEntities)
-        #         for el in list_searchEntities:
-        #             thisset.add(el)
-
         result = getLocationDateAndMoney(userText)
 
         location = result[0]
@@ -48,33 +35,33 @@ class ServiceText:
         print("\n\n\nFinal Keywords:")
         # print(thisset)
 
-        print("Keywords:")
-        print(list_searchEntities)
-        print()
-
-        q = ""
+        # print("Keywords:")
+        # print(list_searchEntities)
+        # print()
 
         locationStr = "-"
         dateStr = "-"
         moneyStr = "-"
         if location:
-            print("Location: ")
-            print(location[0])
+            # print("Location: ")
+            # print(location[0])
             locationStr = location[0]
         if date:
-            print("Date: ")
-            print(date[0])
+            # print("Date: ")
+            # print(date[0])
             dateStr = date[0]
         if money:
-            print("Budget: ")
-            print(money[0])
+            # print("Budget: ")
+            # print(money[0])
             moneyStr = money[0]
 
         objReturned = TextObj(list_searchEntities, locationStr, dateStr, moneyStr)
-        print(objReturned)
+        # print(objReturned)
+
+        labels_list = []
         for label in objReturned.getListOfObjectsWithProb():
-            print(label)
-        return objReturned
+            labels_list.append([label.getEntity(), label.getProb()])
+        return labels_list
 
     def pushToFile(self, extension, list_objects, list_cities):
         for city in list_cities:
@@ -142,8 +129,8 @@ class ServiceText:
 
     def LabelToLabelComparison(self, labelList):
         l = []
-        labels = []
         for city in self.list_cities:
+            labels = []
 
             similarity = 0
             with open('../Scrapping/labels/' + city + self.extension, 'rb') as f:
@@ -151,26 +138,41 @@ class ServiceText:
                 list_labels_for_cities = obj.getListOfObjectsWithProb()
                 keywords = [x.getEntity() for x in list_labels_for_cities]
                 keywords.append(city)
-                # print(keywords)
+                print("labeltolable: " , keywords)
 
-            for label in labelList:
-                for keyword in keywords:
+            for keyword in keywords:
+                for label_prop in labelList:
+                    label= label_prop[0]
+                    if keyword =="Art Museum":
+                        print("stop")
+                    probability= label_prop[1]
+                    keyword = keyword.lower()
+                    label = label.lower()
+
                     if keyword == label:
-                        similarity += 2
+                        if probability>=0.7:
+                            similarity += 3
+                        elif probability>=0.45:
+                            similarity+=2
                         if keyword not in labels:
                             labels.append(keyword)
 
                     for word in keyword.split(" "):
                         if Levenshtein.distance(word, label) < max(len(word), len(label))//2 and word not in labels:
-                            similarity += 1
+                            if probability >= 0.7:
+                                similarity += 2
+                            elif probability >= 0.45:
+                                similarity += 1
                             if word not in labels:
                                 labels.append(word)
                             break
-                        elif self.areSynonysm(label, keyword)and word not in labels:
-                            similarity += 1
+                        elif self.areSynonysm(label, word)and word not in labels:
+                            if probability >= 0.7:
+                                similarity += 2
+                            elif probability >= 0.45:
+                                similarity += 1
                             if word not in labels:
                                 labels.append(word)
-
             l.append([city, similarity])
 
 
@@ -207,4 +209,4 @@ s = ServiceText()
 # nltk.download()
 #['Corinthia Lisbon', 'Sete Rios neighborhood of Lisbon', 'Portuguese capital.Corinthia Hotel Lisbon', 'Lisbon tour', 'bustling city center', 'good tourism office', 'Lisbon']
 
-print(s.LabelToLabelComparison(['Lisbon', 'neighbours', 'nice hotel', 'tourism', 'hostel', 'metropolis']))
+# print(s.LabelToLabelComparison(['Lisbon', 'neighbours', 'nice hotel', 'tourism', 'hostel', 'metropolis']))
