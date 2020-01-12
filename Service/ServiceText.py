@@ -1,15 +1,21 @@
+import nltk
+
 from NLPAylienAndWatson.TextRecognition import getFeatFromText, getLocationDateAndMoney
 from NLPAylienAndWatson.TextObj import TextObj
 from NLPAylienAndWatson.main import textToLabel
 from Scrapping.textData import *
 import pickle
+import Levenshtein
+from nltk.corpus import wordnet
 
-#from TextSimilarity.text_sim_api import get_top_similar_texts
+# from TextSimilarity.text_sim_api import get_top_similar_texts
 
 
 class ServiceText:
     def __init__(self):
-        pass
+        self.extension = ".txt"
+        self.list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
+                       'Barcelona', 'Bern', 'St.Petersburg']
 
     # def TextToTextAlgorithm(self, userText):
     #     return get_top_similar_texts(userText)
@@ -72,7 +78,9 @@ class ServiceText:
 
     def pushToFile(self, extension, list_objects, list_cities):
         for city in list_cities:
-            with open("C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\textData\\" + city + extension, 'r', encoding="utf8") as content_file:
+            with open(
+                                    "C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\textData\\" + city + extension,
+                                    'r', encoding="utf8") as content_file:
                 content = content_file.read()
                 # print(content)
                 obj = textToLabel(content)
@@ -133,28 +141,54 @@ class ServiceText:
         return [listTextObjs, list_cities]
 
     def LabelToLabelComparison(self, labelList):
-        pass
+        l = []
+        for city in self.list_cities:
+            similarity = 0
+            with open('C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta'
+                      '-mirpr\\Scrapping\\labels\\' + city + self.extension, 'rb') as f:
+                obj = pickle.load(f)
+                list_labels_for_cities = obj.getListOfObjectsWithProb()
+                keywords = [x.getEntity() for x in list_labels_for_cities]
+                keywords.append(city)
 
+            for label in labelList:
+                for keyword in keywords:
+                    if keyword == label:
+                        similarity += 1
+                    elif Levenshtein.distance(keyword, label) < min(len(keyword), len(label))//2:
+                        similarity += 1
+                    elif self.areSynonysm(label, keyword):
+                        similarity += 1
+
+            l.append([city, similarity])
+
+        l = sorted(l, key=lambda x: x[1], reverse=True)
+        return l
+
+    def areSynonysm(self, word1, word2):
+        for synset in wordnet.synsets(word1):
+            lemma = synset.lemma_names()
+            if lemma != word2:
+                return True
+            return False
 
 s = ServiceText()
 # s.extractFromWebFiles()
-[listTextObjs, list_cities] = s.getSavedLabelsFromFile()
+#[listTextObjs, list_cities] = s.getSavedLabelsFromFile()
 # print("-------------------------------")
 # print(listTextObjs)
 # print(listTextObjs[0])
 # print(list_cities)
-
-
-list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
-                       'Barcelona', 'Bern', 'St.Petersburg']
-
-extension = ".txt"
-
-for i in range(0, len(list_cities)):
-    with open('C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\labels\\' + list_cities[i]+extension, 'wb') as f:
-        pickle.dump(listTextObjs[i], f)
-
-
-
-
-
+#
+# list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
+#                'Barcelona', 'Bern', 'St.Petersburg']
+#
+# extension = ".txt"
+#
+# for i in range(0, len(list_cities)):
+#     with open('0C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\labels\\' +
+#                             list_cities[i] + extension, 'wb') as f:
+#         pickle.dump(listTextObjs[i], f)
+#print(s.get_word_synonyms_from_sent('happy', 'glad'))
+# nltk.download()
+print(s.LabelToLabelComparison(['forest','London','park','sunny','tree']))
