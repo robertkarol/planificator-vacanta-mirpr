@@ -56,6 +56,8 @@ class TravelItinerary:
         :param closing_time: Closing time of the location (must be "hh:mm:ss" format)
         """
         date_of_visit = self.__date_of_itinerary()
+        if location.is_closed(date_of_visit):
+            return
         visit = {
             "name": location.name,
             "OpeningTime": date_of_visit + 'T' + location.opening_time(date_of_visit),
@@ -102,7 +104,6 @@ class TravelItinerary:
             }
             requestJSON = json.dumps(requestJSON)
             headers = {'content-type': 'application/json'}
-            print(requestJSON)
             response = requests.post(settings.OPTIMIZE_ITINERARY % settings.MICROSOFT_API_KEY, data=requestJSON, headers=headers)
             if response.status_code >= 400 and response.status_code < 500:
                 raise ValueError("Bad request or cannot schedule the desired itinerary within the given period")
@@ -127,7 +128,6 @@ class TravelItinerary:
         waypoints = self.__build_map_waypoint(self.__start_location, 1) + self.__build_map_waypoint(self.__end_location, 2)
         for i in range(len(visits)):
             waypoints += self.__build_map_waypoint(visits[i].location, i + 3)
-        # TODO: Add more options of visualizing the map
         response = requests.get(settings.GET_MAP % (waypoints, settings.MICROSOFT_API_KEY), stream=True)
         if response.status_code >= 400 and response.status_code < 500:
             raise ValueError("Bad request or cannot schedule the desired itinerary within the given period")
