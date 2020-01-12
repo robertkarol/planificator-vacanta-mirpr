@@ -144,13 +144,14 @@ class ServiceText:
         l = []
         labels = []
         for city in self.list_cities:
+
             similarity = 0
             with open('../Scrapping/labels/' + city + self.extension, 'rb') as f:
                 obj = pickle.load(f)
                 list_labels_for_cities = obj.getListOfObjectsWithProb()
                 keywords = [x.getEntity() for x in list_labels_for_cities]
                 keywords.append(city)
-                print(keywords)
+                # print(keywords)
 
             for label in labelList:
                 for keyword in keywords:
@@ -158,7 +159,8 @@ class ServiceText:
                         similarity += 2
                         if keyword not in labels:
                             labels.append(keyword)
-                    for word in keywords:
+
+                    for word in keyword.split(" "):
                         if Levenshtein.distance(word, label) < max(len(word), len(label))//2 and word not in labels:
                             similarity += 1
                             if word not in labels:
@@ -168,8 +170,6 @@ class ServiceText:
                             similarity += 1
                             if word not in labels:
                                 labels.append(word)
-                            print("synonim:" + keyword)
-                            print(labels)
 
             l.append([city, similarity])
 
@@ -207,4 +207,4 @@ s = ServiceText()
 # nltk.download()
 #['Corinthia Lisbon', 'Sete Rios neighborhood of Lisbon', 'Portuguese capital.Corinthia Hotel Lisbon', 'Lisbon tour', 'bustling city center', 'good tourism office', 'Lisbon']
 
-print(s.LabelToLabelComparison(['Lisbon', 'neighbours', 'nice hotel', 'tourism']))
+print(s.LabelToLabelComparison(['Lisbon', 'neighbours', 'nice hotel', 'tourism', 'hostel', 'metropolis']))
