@@ -142,35 +142,49 @@ class ServiceText:
 
     def LabelToLabelComparison(self, labelList):
         l = []
+        labels = []
         for city in self.list_cities:
             similarity = 0
-            with open('C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta'
-                      '-mirpr\\Scrapping\\labels\\' + city + self.extension, 'rb') as f:
+            with open('../Scrapping/labels/' + city + self.extension, 'rb') as f:
                 obj = pickle.load(f)
                 list_labels_for_cities = obj.getListOfObjectsWithProb()
                 keywords = [x.getEntity() for x in list_labels_for_cities]
                 keywords.append(city)
+                print(keywords)
 
             for label in labelList:
                 for keyword in keywords:
                     if keyword == label:
-                        similarity += 1
-                    elif Levenshtein.distance(keyword, label) < min(len(keyword), len(label))//2:
-                        similarity += 1
-                    elif self.areSynonysm(label, keyword):
-                        similarity += 1
+                        similarity += 2
+                        if keyword not in labels:
+                            labels.append(keyword)
+                    for word in keywords:
+                        if Levenshtein.distance(word, label) < max(len(word), len(label))//2 and word not in labels:
+                            similarity += 1
+                            if word not in labels:
+                                labels.append(word)
+                            break
+                        elif self.areSynonysm(label, keyword)and word not in labels:
+                            similarity += 1
+                            if word not in labels:
+                                labels.append(word)
+                            print("synonim:" + keyword)
+                            print(labels)
 
             l.append([city, similarity])
+
 
         l = sorted(l, key=lambda x: x[1], reverse=True)
         return l
 
+
     def areSynonysm(self, word1, word2):
         for synset in wordnet.synsets(word1):
             lemma = synset.lemma_names()
-            if lemma != word2:
+            if word2 in lemma:
                 return True
-            return False
+        return False
+
 
 s = ServiceText()
 # s.extractFromWebFiles()
@@ -191,4 +205,6 @@ s = ServiceText()
 #         pickle.dump(listTextObjs[i], f)
 #print(s.get_word_synonyms_from_sent('happy', 'glad'))
 # nltk.download()
-print(s.LabelToLabelComparison(['forest','London','park','sunny','tree']))
+#['Corinthia Lisbon', 'Sete Rios neighborhood of Lisbon', 'Portuguese capital.Corinthia Hotel Lisbon', 'Lisbon tour', 'bustling city center', 'good tourism office', 'Lisbon']
+
+print(s.LabelToLabelComparison(['Lisbon', 'neighbours', 'nice hotel', 'tourism']))

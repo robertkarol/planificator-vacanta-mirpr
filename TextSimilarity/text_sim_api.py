@@ -3,7 +3,9 @@ from os import walk
 
 import paralleldots
 
-paralleldots.set_api_key("your api key")
+api_keys= ["MjU6VdvlR3v7HJqOJubsiuaN0Ua6ogriyud2cHsewqw","lLG5gPuikVgkqM7sKhqNy3q3hEg4b52Fp5vmSZhao4I",
+           "AripSH9GfAOET6O8uZ3AQ4rJyOM7HM31YwDGjuFQ6PY" ]
+paralleldots.set_api_key(api_keys[2])
 
 def get_similarity(text1, text2):
     return paralleldots.similarity(text1, text2)
@@ -26,7 +28,7 @@ def get_top_similar_texts( user_query):
         sim_list= sorted(sim_list, key= lambda x : x[1], reverse=True)
         for sim in sim_list:
             print(sim)
-
+    return sim_list
 
 if __name__=="__main__":
     get_top_similar_texts("I wish to go with my family in a warm place where my children can go to the pool and where my husband can play poker. Also I want this place to be in the United States. Somewhere in California should do the trick. We would like to spend 10 thousand dollars and we want to go this summer.")

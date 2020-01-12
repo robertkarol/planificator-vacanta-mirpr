@@ -38,9 +38,7 @@ class ServiceMain:
     # Each list's element is of form : ( label, probability )
     # label is a string, probability is a number between 0 and 1
     def combineLocationList(self, listLocationByLabel, listLocationByText):
-    #     TODO THIS
         pass
-
 
     # imagePath is the path of a png image
     def getImageLocation(self,imagePath):
