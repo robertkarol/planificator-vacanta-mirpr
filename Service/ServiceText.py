@@ -1,17 +1,18 @@
 from NLPAylienAndWatson.TextRecognition import getFeatFromText, getLocationDateAndMoney
 from NLPAylienAndWatson.TextObj import TextObj
+from NLPAylienAndWatson.main import textToLabel
 from Scrapping.textData import *
 import pickle
 
-from TextSimilarity.text_sim_api import get_top_similar_texts
+#from TextSimilarity.text_sim_api import get_top_similar_texts
 
 
 class ServiceText:
     def __init__(self):
         pass
 
-    def TextToTextAlgorithm(self, userText):
-        return get_top_similar_texts(userText)
+    # def TextToTextAlgorithm(self, userText):
+    #     return get_top_similar_texts(userText)
 
     def extractLabelsAlgorithm(self, userText):
         # text = "I wish to go with my family in a warm place where my children can go to the pool and where my husband
@@ -68,9 +69,10 @@ class ServiceText:
         for label in objReturned.getListOfObjectsWithProb():
             print(label)
         return objReturned
-    def pushToFile(extension, list_objects, list_cities):
+
+    def pushToFile(self, extension, list_objects, list_cities):
         for city in list_cities:
-            with open(city + extension, 'r', encoding="utf8") as content_file:
+            with open("C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\textData\\" + city + extension, 'r', encoding="utf8") as content_file:
                 content = content_file.read()
                 # print(content)
                 obj = textToLabel(content)
@@ -79,14 +81,13 @@ class ServiceText:
         with open('labelsFromWebTexts', 'wb') as f:
             pickle.dump(list_objects, f)
 
-
-    def extractFromWebFiles(onParagraphs=False):
+    def extractFromWebFiles(self, onParagraphs=False):
         extension = '.txt'
         list_objects = []
         list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
                        'Barcelona', 'Bern', 'St.Petersburg']
         if not onParagraphs:
-            pushToFile(extension, list_objects, list_cities)
+            self.pushToFile(extension, list_objects, list_cities)
         else:
             for city in list_cities:
                 with open(city + extension, 'r', encoding="utf8") as content_file:
@@ -111,7 +112,7 @@ class ServiceText:
 
                     objT = TextObj([], '', '', '')
                     for obj in list_labelsForTextContent:
-                        objT.setList(objT.getListOfObjectsWithProb() + obj.getListOfObjectsWithProb())
+                        objT.setEntities(objT.getListOfObjectsWithProb() + obj.getListOfObjectsWithProb())
                         objT.setBudget(objT.getBudget() + obj.getBudget())
                         objT.setDate(objT.getDate() + obj.getDate())
                         objT.setLocation(objT.getLocation() + obj.getLocation())
@@ -124,14 +125,36 @@ class ServiceText:
             with open('labelsFromWebTexts', 'wb') as f:
                 pickle.dump(list_objects, f)
 
-
-    def getSavedLabelsFromFile():
+    def getSavedLabelsFromFile(self):
         with open('labelsFromWebTexts', 'rb') as f:
             listTextObjs = pickle.load(f)
         list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
                        'Barcelona', 'Bern', 'St.Petersburg']
         return [listTextObjs, list_cities]
 
-
     def LabelToLabelComparison(self, labelList):
         pass
+
+
+s = ServiceText()
+# s.extractFromWebFiles()
+[listTextObjs, list_cities] = s.getSavedLabelsFromFile()
+# print("-------------------------------")
+# print(listTextObjs)
+# print(listTextObjs[0])
+# print(list_cities)
+
+
+list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
+                       'Barcelona', 'Bern', 'St.Petersburg']
+
+extension = ".txt"
+
+for i in range(0, len(list_cities)):
+    with open('C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\labels\\' + list_cities[i]+extension, 'wb') as f:
+        pickle.dump(listTextObjs[i], f)
+
+
+
+
+

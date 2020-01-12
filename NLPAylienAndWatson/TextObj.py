@@ -15,8 +15,19 @@ class TextObj:
         return self.date
 
     def getBudget(self):
-
         return self.budget
 
+    def setEntities(self, entities):
+        self.entities = entities
+
+    def setLocation(self, location):
+        self.location = location
+
+    def setDate(self, date):
+        self.date = date
+
+    def setBudget(self, budget):
+        self.budget = budget
+
     def __str__(self):
-        return str(self.entities) + " " + str(self.location) + " " +str(self.date) + " " +str(self.budget)
+        return str(self.entities) + " " + str(self.location) + " " + str(self.date) + " " + str(self.budget)
