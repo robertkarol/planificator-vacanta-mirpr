@@ -6,6 +6,11 @@ import pandas
 import folium
 
 from API.ItineraryAPI.Location import Location
+from Service.ServiceMain import ServiceMain
+
+
+service=ServiceMain()
+
 
 def searchByTextAlgorithm(text):
     # do stuff
@@ -27,7 +32,7 @@ def searchByImageAlgorithm(imageLocation):
 
 def searchRouteByLocationAlgorithm(location, filters):
     print("WE ARE SEARCHING VISITING ROUTES IN ", location)
-    print(filters)
+    print("With these filters ", filters)
 
     # does magic
 
@@ -121,17 +126,19 @@ def searchByTextResultWindow(locations):
             break
         elif event in ("Find visiting route"):
             windowTextResults.close()
-            searchRouteByLocationWindow(values[0])
+
+            filter=service.getFilters()
+            searchRouteByLocationWindow(values[0],filter)
 
 
-def searchRouteByLocationWindow(location):
+def searchRouteByLocationWindow(location,filter):
     layoutOperation = [
         [sg.Text('What place do you want to explore ?')],
         [sg.InputText(location)], [],
-        [sg.Text('By what do you want to travel ?')],
-        [sg.Checkbox('Personal car'), sg.Checkbox('On foot', default=True), sg.Checkbox("Public transportation")],
+        # [sg.Text('By what do you want to travel ?')],
+        # [sg.Checkbox('Personal car'), sg.Checkbox('On foot', default=True), sg.Checkbox("Public transportation")],
         [sg.Text('What are your interests ?')],
-        [sg.Checkbox('Arts'), sg.Checkbox('Arhitectural'), sg.Checkbox("Entertainment")],
+        [sg.Listbox(values=filter, size=(30, 3))],
         [sg.Button('Search for me'), sg.Button('Cancel')]
     ]
     windowOperation = sg.Window('Text it out').Layout(layoutOperation)
@@ -146,7 +153,51 @@ def searchRouteByLocationWindow(location):
             windowOperation.close()
 
             print(valuesOperation)
-            searchRouteByLocationAlgorithm(valuesOperation[0], valuesOperation)
+            searchRouteByLocationAlgorithm(valuesOperation[0], valuesOperation[1])
+
+
+def searchByImageTextAlgorithm(text, path):
+    print("RUNNING ALGORITHM FOR :")
+    print(text)
+    print(path)
+
+
+    # get result
+    locations = ["Malibu", "California", "Sri Lanka"]
+    searchByTextResultWindow(locations)
+
+
+def openWindowImageTextSearch():
+    print('Text & Image search')
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))[0:-7] + "\\data\\blohsaved.png"
+    print(ROOT_DIR)
+    image_elem = sg.Image(ROOT_DIR)
+
+    layoutOperation = [
+        [sg.Text('A few words to guide us..')],
+        [sg.InputText('Couple of words')],[],
+        [sg.Text('An image says what a thousand words can\'t..')],
+        [sg.Text('The image :'), sg.InputText('path'), sg.FileBrowse()],
+        [image_elem],
+        [sg.Button('Search for me'), sg.Button('Cancel')]
+    ]
+    windowOperation = sg.Window('Tell us').Layout(layoutOperation)
+
+    while True:
+        eventOperation, valuesOperation = windowOperation.Read(timeout=50)
+        # print(valuesOperation)
+        if eventOperation in (None, 'Cancel'):
+            windowOperation.close()
+            main()
+            break
+        elif eventOperation in ('Search for me'):
+            windowOperation.close()
+            print(valuesOperation[1])
+            searchByImageTextAlgorithm(valuesOperation[0], valuesOperation[1])
+
+        if valuesOperation[1] != "path":
+            image_elem.update(valuesOperation[0])
+
 
 
 def openWindowTextSearch():
@@ -214,7 +265,9 @@ def openWindowRoutesSearch():
             break
         else:
             windowOperation.close()
-            searchRouteByLocationWindow(valuesOperation[0])
+            filter=service.getFilters()
+            print(filter)
+            searchRouteByLocationWindow(valuesOperation[0],filter)
 
 
 sg.ChangeLookAndFeel('Dark')
@@ -222,13 +275,16 @@ sg.SetOptions(element_padding=(5, 5), button_element_size=(15, 2), auto_size_but
               button_color=('white', 'firebrick4'))
 layout = [
     [sg.Text('Let us plan an awesome holiday for you..')],
-    [sg.Button('Search with text'), sg.Button('Search with image'), sg.Button('Create a route')],
+    [sg.Button('Search with text'), sg.Button('Search with image'), sg.Button('Search with image & text'), sg.Button('Create a route')],
     [sg.Button('Cancel')]
 ]
 window = sg.Window('HOLIday').Layout(layout)
 
 
+
 def main():
+
+
     try:
         window.enable()
     except(Exception):
@@ -239,6 +295,10 @@ def main():
         if event in (None, 'Cancel'):
             print("Goodbye")
             break
+
+        if event in ('Search with image & text'):
+            window.disable()
+            openWindowImageTextSearch()
 
         if event in ('Search with text'):
             window.disable()

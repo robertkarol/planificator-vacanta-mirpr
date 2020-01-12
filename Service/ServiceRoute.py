@@ -1,6 +1,11 @@
+import pathlib
+from os import listdir
+import os
+
 from API.ItineraryAPI.Location import Location
 from API.ItineraryAPI.TravelItinerary import TravelItinerary
 import geocoder
+import pkgutil
 
 class ServiceRoute:
     def __init__(self):
@@ -42,11 +47,25 @@ class ServiceRoute:
         g = geocoder.ip('me')
         return Location('start', g.latlng[0], g.latlng[1])
 
+    def __parseFilterFile(self, filter):
+        with open('./' + filter + ".txt") as file:
+            for line in file:
+                data = line.strip().split(";")
+                if len(data[-1]) == 0 or len(data[-2]) == 0:
+                    continue
+                location = Location(data[0], data[-2], data[-1])
+
     def getObjectivesByLocationAndFilter(self, filters):
-        pass
+        objectives = []
+        for filter in filters:
+            objectives.append(self.__parseFilterFile(filter))
+        return objectives
+
 
     def getFilters(self):
-        pass
+
+        data=str(pathlib.Path(__file__).parent.parent.absolute())+"\Scrapping\obiectiveData"
+        return [str(file).split(".txt")[0] for file in listdir(data)]
 
     def getRouteVisualization(self):
         return self.__map

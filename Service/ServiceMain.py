@@ -61,11 +61,12 @@ class ServiceMain:
         return listLocationsFinal
 
 
+
     # returns a list of Locations
     # location is a string
     # filters is a list of strings, each of them is a category of interest
-    def getObjectivesByLocationAndFilter(self, location, filters, date):
-        return self.__servRoute.getObjectivesByLocationAndFilter(location, filters, date)
+    def getObjectivesByLocationAndFilter(self,location,filters,date):
+        return self.__servRoute.getObjectivesByLocationAndFilter(location,filters)
 
     # returns a list of strings, each string is a category of interest
     def getFilters(self):

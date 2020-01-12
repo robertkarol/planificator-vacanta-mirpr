@@ -42,8 +42,8 @@ def filter(results, filtered_words):
     return new_results
 
 
-l = getFeatFromPicture('tokyo2.jpg')
-print()
-print()
-print("Features:")
-print(l)
+# l = getFeatFromPicture('tokyo2.jpg')
+# print()
+# print()
+# print("Features:")
+# print(l)
