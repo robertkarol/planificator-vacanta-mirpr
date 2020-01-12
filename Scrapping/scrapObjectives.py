@@ -3,128 +3,288 @@ import urllib
 import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import pandas as pd
 import csv
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 import os
 
+
 locatii=[]
-def scrapLocations(url):
-    session = requests.Session()
-    retry = Retry(connect=3, backoff_factor=0.5)
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
+
+import time
 
 
-    response = session.get(url)
-
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    list=soup.findAll("div", attrs={'class':'item-name'})
-
-    for l in list:
-        locatii.append(l.text.replace(" ","").replace("\t","").replace("\r","").replace("\n",""))
-
-def writeFile(name,list):
-    exportName='textData\\' + name + '.txt'
-    if not os.path.isfile(exportName):
-        with open(exportName, mode='a+',encoding="utf-8") as out:
-            for item in list:
-                out.write("%s\n" % item)
 
 
-def scrapLocationsText(url,name):
-    exportName = 'textData\\' + name + '.txt'
-    if os.path.isfile(exportName):
-        return
 
-    session = requests.Session()
-    retry = Retry(connect=3, backoff_factor=0.5)
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
+def writeFile(name,dict):
+    exportName='linksData\\' + name + '.txt'
+    with open(exportName, mode='a+',encoding="utf-8") as out:
+        for item in dict:
+            print(item['name'] +';'+item['review'] +';'+item['top'] +';'+item['link']+';\n')
+            out.write(item['name'] +';'+item['review'] +';'+item['top'] +';'+item['link']+';\n')
+
+def writeLocation(name,dict):
+    exportName='obiectiveData\\' + name + '.txt'
+    with open(exportName, mode='a+',encoding="utf-8") as out:
+        for item in dict:
+            try:
+                out.write(item['name'] +';'+item['review'] +';'+item['top'] +';'+item['link']+
+                          ';'+str(item['category'])+';'+item['description']+';'+str(item['schedule'])+
+                          ';'+item['duration']+';'+item['coordinates'][0]+';'+item['coordinates'][1]+';\n')
+            except:
+                print("FAILED\n\n\n\n")
+
+def scrapVisitText(url,name):
+    # exportName = 'textData\\' + name + '.txt'
+    # if os.path.isfile(exportName):
+    #     return
+
+    #CHOICE 1
+    # session = requests.Session()
+    # retry = Retry(connect=3, backoff_factor=0.5)
+    # adapter = HTTPAdapter(max_retries=retry)
+    # session.mount('http://', adapter)
+    # session.mount('https://', adapter)
+    #
+    #
+    # response = session.get(url)
 
 
-    response = session.get(url)
-
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    text=[]
-
-    list=soup.find("div", attrs={'id':'mntl-chop_1-0--chop-content'})
-    # print("TEXT FROM P")
-    if list is None:
-        return
-    for p in list.findAll('p'):
-        # print(p.text)
-        text.append(p.text)
-
-    writeFile(name,text)
-
-    # print("TEXT FROM H1")
-    for p in list.findAll('h1'):
-        # print(p.text)
-        text.append(p.text)
+    # CHOICE 2
+    binary = FirefoxBinary(r'C:\Program Files\Mozilla Firefox\firefox.exe')
+    driver = webdriver.Firefox(firefox_binary=binary)
+    driver.get(url)
+    time.sleep(3)
+    html = driver.page_source
 
 
-    # print("TEXT FROM H2")
-    for p in list.findAll('h2'):
-        # print(p.text)
-        text.append(p.text)
 
-    # print("TEXT FROM li")
-    for p in list.findAll('li'):
-        nots=['email',  'contact', 'website', 'Pin','share','like']
-        ok=True
-        for n in nots:
-            if n.lower() in p.text.lower():
-                ok=False
-        if ok:
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    textCategory=[]
+    # print(response.text)
+
+    # ----------------------------------------------------
+    try:
+        list=soup.find("div", attrs={'class':'detail'})
+        # print("TEXT FROM P")
+        if list is None:
+            pass
+        else:
+            for p in list.findAll('a'):
+                # print(p.text)
+                textCategory.append(p.text)
+            try:
+                textCategory.remove("More")
+            except:
+                pass
+
+        # print(textCategory)
+    except:
+        pass
+
+
+    # ----------------------------------------------------
+    descriptionCategory = ""
+
+    try:
+        list = soup.findAll("div", attrs={'class': 'attractions-attraction-detail-about-card-AttractionDetailAboutCard__section--1_Efg'})
+        # print("TEXT FROM P")
+        if list is None:
+            pass
+        else:
             # print(p.text)
-            text.append(p.text)
+            descriptionCategory=list[1].text
 
-    writeFile(name+"Extended",text)
+            # print(descriptionCategory)
+    except:
+        pass
 
 
-    # for l in list:
-    #     locatii.append(l.text.replace(" ","").replace("\t","").replace("\r","").replace("\n",""))
+    # ----------------------------------------------------
+    durationCategory = ""
+    try:
+        list = soup.findAll("div", attrs={'class': 'attractions-attraction-detail-about-card-AttractionDetailAboutCard__section--1_Efg'})
+        # print("TEXT FROM P")
+        if list is None:
+            pass
+        else:
+            # print(p.text)
+            durationCategory=list[4].text.split(':')[-1]
+
+            # print(durationCategory)
+    except:
+        pass
+
+
+    # ----------------------------------------------------
+    scheduleCategory = []
+
+    try:
+        list = soup.find("div", attrs={'class': 'hoursAll hidden'})
+
+        try:
+            list=soup.find("div",attrs={'class': 'ui_columns is-multiline'})
+            # print("FOUND")
+        except:
+            pass
+        # print("TEXT FROM P")
+        if list is None:
+            pass
+        else:
+            # print(p.text)
+            scheduleCategory=[x.text for x in list]
+
+            # print(scheduleCategory)
+    except:
+        pass
+
+    # ----------------------------------------------------
+    coordinatesCategory = ["",""]
+
+    try:
+        list = soup.find("div", attrs={'class': 'prw_rup prw_common_responsive_static_map_image staticMap'})
+
+
+        # print("TEXT FROM P")
+        if list is None:
+            pass
+        else:
+            # print(p.text)
+            coordinatesCategory=list.contents[1]['src'].split("center=")[1].split('&')[0].split(',')
+
+            # print(coordinatesCategory)
+    except:
+        pass
+
+
+    print("__________________")
+    driver.close()
+    return textCategory,durationCategory,scheduleCategory,coordinatesCategory,descriptionCategory
+
+
+
+
+
+def scrapLinks(url,obiective):
+    binary = FirefoxBinary(r'C:\Program Files\Mozilla Firefox\firefox.exe')
+    driver = webdriver.Firefox(firefox_binary=binary)
+    driver.get(url)
+    html = driver.page_source
+
+
+
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    textCategory=[]
+    # print(response.text)
+
+    # ----------------------------------------------------
+    list=soup.findAll("div", attrs={'class':'attraction_element'})
+    print(len(list))
+
+    for el in list:
+        site="https://www.tripadvisor.com/"+el.findAll('a')[0]['href']
+
+        nume=el.text.split('\n')[9]
+        reviews=el.text.split('\n')[20]
+        top=el.text.split('\n')[26]
+
+        # print(nume)
+        # print(reviews)
+        # print(top)
+
+        element={}
+        element["name"]=nume
+        element["review"]=reviews
+        element["top"]=top
+        element["link"]=site
+
+        obiective.append(element)
+
+
+        # print("___________________")
+        # print("___________________")
+        # print(el['href'])
+    driver.close()
+
+
+def scrapAllLinks():
+    rootLink = "https://www.tripadvisor.com/Attractions-g190454-Activities"
+    filterNumber = [(52,1,"Water & Amusement Parks"),(57,3,"Nature & Parks"),(49, 6, "Museums"), (47, 17, "Sights & Landmarks"),(48,1,"Zoos & Aquariums"),
+                    (56,5,"Fun & Games"),(20,7,"Nightlife"),(40,3,"Spas & Wellness"),(53,1,"Casinos & Gambling")]
+
+    for filterIt in filterNumber:
+        over = 30
+        obiective = []
+        scrapLinks(rootLink + "-c" + str(filterIt[0]) + "-Vienna.html", obiective)
+        for i in range(filterIt[1] - 1):
+            scrapLinks(rootLink + "-c" + str(filterIt[0]) + "-oa" + str(over) + "-Vienna.html#FILTERED_LIST", obiective)
+            over += 30
+        print(len(obiective))
+        writeFile(filterIt[2], obiective)
+
+
+import os
+def scrapAllLocation():
+    files = []
+    filesDone = []
+    # r=root, d=directories, f = files
+    for r, d, f in os.walk('linksData'):
+        for file in f:
+            if '.txt' in file:
+                files.append(os.path.join(r, file))
+    for r, d, f in os.walk('obiectiveData'):
+        for file in f:
+            if '.txt' in file:
+                filesDone.append(os.path.join(r, file))
+
+    print(files)
+    print(filesDone)
+    for categoryFile in files:
+        print("obiectiveData\\"+categoryFile.split('\\')[1])
+        if "obiectiveData\\"+categoryFile.split('\\')[1] in filesDone:
+            print(categoryFile+" ALREADY TREATED")
+        else:
+            print(categoryFile)
+            f = open(categoryFile, "r")
+
+            obiectiveList=[]
+            for x in f:
+                x=x.split(';')
+                object={}
+                object['name']=x[0]
+                object['review']=x[1]
+                object['top']=x[2]
+                object['link']=x[3]
+                print("Accessing..")
+                try:
+                    object['category'],  object['duration'], object['schedule'], object['coordinates'],object['description']=scrapVisitText(object['link'],object['name'])
+                    print(object)
+                    obiectiveList.append(object)
+                except:
+                    pass
+            print("WRITING\n\n\n\n\n")
+            writeLocation(categoryFile.split('\\')[1][:-4], obiectiveList)
+
 
 
 
 def main():
-    print("Scrapping up to 33% of objectives")
-    scrapLocations('https://www.listchallenges.com/top-100-cities-of-europe')
-    print("Scrapping up to 66% of objectives")
-    scrapLocations('https://www.listchallenges.com/top-100-cities-of-europe/list/2')
-    print("Scrapping up to 99% of objectives")
-    scrapLocations('https://www.listchallenges.com/top-100-cities-of-europe/list/3')
-    print("Finished scrapping of locations")
+    print("Scrapping links")
 
-    print("Locations")
-    for l in locatii:
-        print(l+",")
+    # scrapAllLinks()
+
+    print("Scrapping objectives")
+
+    scrapAllLocation()
 
 
-    for l in locatii:
-        sites=[]
-        with open("data\\"+l.replace(',','')+'.csv') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    line_count += 1
-                else:
-                    print(row[-1])
-                    sites.append(row[-1])
-                    line_count += 1
-            print(str(line_count)+" lines in :"+ l)
-
-
-
-        for i in sites:
-            scrapLocationsText(i,l)
 
 
 main()
