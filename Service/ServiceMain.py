@@ -38,9 +38,7 @@ class ServiceMain:
     # Each list's element is of form : ( label, probability )
     # label is a string, probability is a number between 0 and 1
     def combineLocationList(self, listLocationByLabel, listLocationByText):
-    #     TODO THIS
         pass
-
 
     # imagePath is the path of a png image
     def getImageLocation(self,imagePath):
@@ -66,7 +64,7 @@ class ServiceMain:
     # location is a string
     # filters is a list of strings, each of them is a category of interest
     def getObjectivesByLocationAndFilter(self,location,filters,date):
-        return self.__servRoute.getObjectivesByLocationAndFilter(location,filters,date)
+        return self.__servRoute.getObjectivesByLocationAndFilter(location,filters)
 
     # returns a list of strings, each string is a category of interest
     def getFilters(self):
