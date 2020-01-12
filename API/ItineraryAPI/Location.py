@@ -52,17 +52,30 @@ class Location:
     def street(self):
         return self.__street
 
+    def is_closed(self, date):
+        date = dateutil.parser.parse(date)
+        len_sch = len(self.__schedule[calendar.day_name[date.weekday()]]) if self.__schedule else 0
+        return len_sch == 1
+
     def opening_time(self, date):
         date = dateutil.parser.parse(date)
-        if self.__schedule and len(self.__schedule[calendar.day_name[date.weekday()]]) > 0:
+        len_sch = len(self.__schedule[calendar.day_name[date.weekday()]]) if self.__schedule else 0
+        if len_sch == 0:
+            return '00:00:00'
+        elif len_sch == 1:
+            return 'closed'
+        else:
             return self.__schedule[calendar.day_name[date.weekday()]][0]
-        return '00:00:00'
 
     def closing_time(self, date):
         date = dateutil.parser.parse(date)
-        if self.__schedule and len(self.__schedule[calendar.day_name[date.weekday()]]) > 0:
+        len_sch = len(self.__schedule[calendar.day_name[date.weekday()]]) if self.__schedule else 0
+        if len_sch == 0:
+            return '23:59:59'
+        elif len_sch == 1:
+            return 'closed'
+        else:
             return self.__schedule[calendar.day_name[date.weekday()]][1]
-        return '23:59:59'
 
     @staticmethod
     def __get_schedule(location):
