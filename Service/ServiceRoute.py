@@ -50,13 +50,95 @@ class ServiceRoute:
         g = geocoder.ip('me')
         return Location('start', g.latlng[0], g.latlng[1])
 
+    def __build_schedule(self, schedule):
+        days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        days_full = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        built_schedule = {
+            'Monday': [],
+            'Tuesday': [],
+            'Wednesday': [],
+            'Thursday': [],
+            'Friday': [],
+            'Saturday': [],
+            'Sunday': []
+        }
+        days_full = list(built_schedule.keys())
+        for i in range(0, len(schedule), 2):
+            day_interval = schedule[i].split('-')
+            if len(day_interval) == 2:
+                for day_idx in range(days.index(day_interval[0].strip()), days.index(day_interval[1].strip()) + 1):
+                    day = days_full[day_idx]
+                    open_close = schedule[i + 1].split('-')
+                    if len(open_close) != 2:
+                        # print(open_close)
+                        raise ValueError("Invalid schedule")
+                    hour = ""
+                    if 'AM' in open_close[0]:
+                        hour = open_close[0][0:-3].strip() + ":00"
+                    else:
+                        hour = open_close[0][0:-3].strip()
+                        h = int(hour.split(':')[0])
+                        h = h + 12 if h < 12 else h
+                        hour = str(h) + ":" + hour.split(':')[1] + ":00"
+
+                    built_schedule[day].append(hour)
+                    if 'AM' in open_close[1]:
+                        hour = open_close[1][0:-3] + ":00"
+                    else:
+                        hour = open_close[1][0:-3]
+                        h = int(hour.split(':')[0])
+                        h = h + 12 if h < 12 else h
+                        hour = str(h) + ":" + hour.split(':')[1] + ":00"
+
+                    built_schedule[day].append(hour)
+            elif len(day_interval) == 1:
+                day_idx = days.index(day_interval[0].strip())
+                day = days_full[day_idx]
+                open_close = schedule[i + 1].split('-')
+                if len(open_close) != 2:
+                    # print(open_close)
+                    raise ValueError("Invalid schedule")
+                hour = ""
+                if 'AM' in open_close[0]:
+                    hour = open_close[0][0:-3].strip() + ":00"
+                else:
+                    hour = open_close[0][0:-3].strip()
+                    h = int(hour.split(':')[0])
+                    h = h + 12 if h < 12 else h
+                    hour = str(h) + ":" + hour.split(':')[1] + ":00"
+
+                built_schedule[day].append(hour)
+                if 'AM' in open_close[1]:
+                    hour = open_close[1][0:-3] + ":00"
+                else:
+                    hour = open_close[1][0:-3]
+                    h = int(hour.split(':')[0])
+                    h = h + 12 if h < 12 else h
+                    hour = str(h) + ":" + hour.split(':')[1] + ":00"
+
+                built_schedule[day].append(hour)
+        return built_schedule
+
     def __parseFilterFile(self, filter):
-        with open('./' + filter + ".txt") as file:
+        objectives = []
+        with open('./Scrapping/obiectiveData/' + filter + ".txt") as file:
             for line in file:
                 data = line.strip().split(";")
-                if len(data[-1]) == 0 or len(data[-2]) == 0:
+                if len(data[-2]) == 0 or len(data[-3]) == 0:
                     continue
-                location = Location(data[0], data[-2], data[-1])
+                try:
+                    schedule = eval(data[-5])
+                    if len(schedule) % 2 == 1:
+                        # print("S"+schedule)
+                        continue
+                    schedule = self.__build_schedule(schedule)
+                except Exception as e:
+                    # print(e)
+                    continue
+
+                location = Location(data[0], data[-3], data[-2], schedule=schedule)
+                objectives.append(ObjectiveVisit(location, None, None))
+        return objectives
 
     def getObjectivesByLocationAndFilter(self, filters):
         objectives = []
@@ -64,9 +146,9 @@ class ServiceRoute:
             objectives.append(self.__parseFilterFile(filter))
         return objectives
 
-
     def getFilters(self):
-        return [str(file).split(".txt")[0] for file in listdir('./Scrapping/obiectiveData')]
+        data = str(pathlib.Path(__file__).parent.parent.absolute()) + "\Scrapping\obiectiveData"
+        return [str(file).split(".txt")[0] for file in listdir(data)]
 
     def getRouteVisualization(self):
         return self.__map
