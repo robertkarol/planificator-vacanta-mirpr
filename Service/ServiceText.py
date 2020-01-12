@@ -1,5 +1,6 @@
 from NLPAylienAndWatson.TextRecognition import getFeatFromText, getLocationDateAndMoney
 from NLPAylienAndWatson.TextObj import TextObj
+from NLPAylienAndWatson.main import textToLabel
 from Scrapping.textData import *
 import pickle
 
@@ -68,7 +69,7 @@ class ServiceText:
         for label in objReturned.getListOfObjectsWithProb():
             print(label)
         return objReturned
-    def pushToFile(extension, list_objects, list_cities):
+    def pushToFile(self,extension, list_objects, list_cities):
         for city in list_cities:
             with open(city + extension, 'r', encoding="utf8") as content_file:
                 content = content_file.read()
@@ -80,13 +81,13 @@ class ServiceText:
             pickle.dump(list_objects, f)
 
 
-    def extractFromWebFiles(onParagraphs=False):
+    def extractFromWebFiles(self,onParagraphs=False):
         extension = '.txt'
         list_objects = []
         list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
                        'Barcelona', 'Bern', 'St.Petersburg']
         if not onParagraphs:
-            pushToFile(extension, list_objects, list_cities)
+            self.pushToFile(extension, list_objects, list_cities)
         else:
             for city in list_cities:
                 with open(city + extension, 'r', encoding="utf8") as content_file:
@@ -125,7 +126,7 @@ class ServiceText:
                 pickle.dump(list_objects, f)
 
 
-    def getSavedLabelsFromFile():
+    def getSavedLabelsFromFile(self):
         with open('labelsFromWebTexts', 'rb') as f:
             listTextObjs = pickle.load(f)
         list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
