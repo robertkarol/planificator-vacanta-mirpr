@@ -1,4 +1,5 @@
 import pathlib
+import re
 from os import listdir
 import os
 
@@ -63,10 +64,15 @@ class ServiceRoute:
             'Sunday': []
         }
         days_full = list(built_schedule.keys())
+        sw = 0
         for i in range(0, len(schedule), 2):
             day_interval = schedule[i].split('-')
             if len(day_interval) == 2:
-                for day_idx in range(days.index(day_interval[0].strip()), days.index(day_interval[1].strip()) + 1):
+                start_idx = days.index(day_interval[0].strip())
+                stop_idx = days.index(day_interval[1].strip())
+                if stop_idx < start_idx:
+                    start_idx, stop_idx = stop_idx, start_idx
+                for day_idx in range(start_idx, stop_idx + 1):
                     day = days_full[day_idx]
                     open_close = schedule[i + 1].split('-')
                     if len(open_close) != 2:
@@ -91,6 +97,7 @@ class ServiceRoute:
                         hour = str(h) + ":" + hour.split(':')[1] + ":00"
 
                     built_schedule[day].append(hour)
+                    sw = 1
             elif len(day_interval) == 1:
                 day_idx = days.index(day_interval[0].strip())
                 day = days_full[day_idx]
@@ -117,6 +124,13 @@ class ServiceRoute:
                     hour = str(h) + ":" + hour.split(':')[1] + ":00"
 
                 built_schedule[day].append(hour)
+                sw = 1
+        if sw == 1:
+            for day in days_full:
+                if len(built_schedule[day]) == 0:
+                    built_schedule[day].append("closed")
+        #print(schedule)
+        #print(built_schedule)
         return built_schedule
 
     def __parseFilterFile(self, filter):
@@ -129,21 +143,27 @@ class ServiceRoute:
                 try:
                     schedule = eval(data[-5])
                     if len(schedule) % 2 == 1:
-                        # print("S"+schedule)
+                        continue
+                    if 'hour' not in data[-4]:
                         continue
                     schedule = self.__build_schedule(schedule)
                 except Exception as e:
                     # print(e)
                     continue
-
+                nrs = re.findall(r'\d+', data[-4])
+                if len(nrs) > 3 or len(nrs) == 0:
+                    continue
+                s = 0
+                for nr in nrs:
+                    s += int(nr)
                 location = Location(data[0], data[-3], data[-2], schedule=schedule)
-                objectives.append(ObjectiveVisit(location, None, None))
+                objectives.append(ObjectiveVisit(location, s / len(nr), None, data[1], data[3], data[5]))
         return objectives
 
     def getObjectivesByLocationAndFilter(self, filters):
         objectives = []
         for filter in filters:
-            objectives.append(self.__parseFilterFile(filter))
+            objectives.extend(self.__parseFilterFile(filter))
         return objectives
 
     def getFilters(self):
