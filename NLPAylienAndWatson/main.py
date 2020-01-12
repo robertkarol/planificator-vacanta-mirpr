@@ -42,17 +42,24 @@ def textToLabel(text):
 
     q = ""
 
+    locationString = ""
+    dateString = ""
+    moneyString = ""
+
     if location:
         print("Location: ")
         print(location[0])
+        locationString = location[0]
     if date:
         print("Date: ")
         print(date[0])
+        dateString = date[0]
     if money:
         print("Budget: ")
         print(money[0])
+        moneyString = money[0]
 
-    objReturned = TextObj(list_searchEntities,location[0],date[0],money[0])
+    objReturned = TextObj(list_searchEntities, locationString, dateString, moneyString)
     print(objReturned)
     return objReturned
     # for i in range(len(list_searchEntities)):
@@ -73,4 +80,4 @@ text = "I wish to go with my family in a warm place where my children can go to 
            "play poker. Also I want this place to be in Paris, near eiffel tower. Somewhere in California should do the " \
            "trick. We would like to spend 10 thousand dollars and we want to go this summer. "
 
-textToLabel(text)
+#textToLabel(text)
