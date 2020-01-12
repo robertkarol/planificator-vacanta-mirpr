@@ -1,8 +1,11 @@
+import pathlib
 from os import listdir
+import os
 
 from API.ItineraryAPI.Location import Location
 from API.ItineraryAPI.TravelItinerary import TravelItinerary
 import geocoder
+import pkgutil
 
 class ServiceRoute:
     def __init__(self):
@@ -60,7 +63,9 @@ class ServiceRoute:
 
 
     def getFilters(self):
-        return [str(file).split(".txt")[0] for file in listdir('./Scrapping/obiectiveData')]
+
+        data=str(pathlib.Path(__file__).parent.parent.absolute())+"\Scrapping\obiectiveData"
+        return [str(file).split(".txt")[0] for file in listdir(data)]
 
     def getRouteVisualization(self):
         return self.__map

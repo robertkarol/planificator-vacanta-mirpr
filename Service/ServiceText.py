@@ -136,23 +136,23 @@ class ServiceText:
         pass
 
 
-s = ServiceText()
+# s = ServiceText()
 # s.extractFromWebFiles()
-[listTextObjs, list_cities] = s.getSavedLabelsFromFile()
+# [listTextObjs, list_cities] = s.getSavedLabelsFromFile()
 # print("-------------------------------")
 # print(listTextObjs)
 # print(listTextObjs[0])
 # print(list_cities)
 
 
-list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
-                       'Barcelona', 'Bern', 'St.Petersburg']
-
-extension = ".txt"
-
-for i in range(0, len(list_cities)):
-    with open('C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\labels\\' + list_cities[i]+extension, 'wb') as f:
-        pickle.dump(listTextObjs[i], f)
+# list_cities = ['Vienna', 'London', 'Lisbon', 'Berlin', 'Bucharest', 'Copenhagen', 'Edinburgh', 'Athens',
+#                        'Barcelona', 'Bern', 'St.Petersburg']
+#
+# extension = ".txt"
+#
+# for i in range(0, len(list_cities)):
+#     with open('C:\\Users\\ptido\\PycharmProjects\\MIRrepo\\planificator-vacanta-mirpr\\planificator-vacanta-mirpr\\Scrapping\\labels\\' + list_cities[i]+extension, 'wb') as f:
+#         pickle.dump(listTextObjs[i], f)
 
 
 
