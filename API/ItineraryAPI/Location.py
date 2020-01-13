@@ -125,8 +125,9 @@ class Location:
                                            l['location']['city'] if 'city' in l['location'] else "",
                                            l['location']['street'] if 'street' in l['location'] else "",
                                            schedule)
-            if city and location.city == city:
-                locations_list.append(location)
+            if city and location.city != city:
+                continue
+            locations_list.append(location)
         return locations_list
 
     def __eq__(self, o: object) -> bool:
