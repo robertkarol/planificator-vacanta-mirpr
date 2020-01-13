@@ -156,7 +156,7 @@ class ServiceRoute:
                 s = 0
                 for nr in nrs:
                     s += int(nr)
-                location = Location(data[0], data[-3], data[-2], schedule=schedule)
+                location = Location(data[0], int(data[-3]), int(data[-2]), schedule=schedule)
                 objectives.append(ObjectiveVisit(location, s / len(nr), None, data[1], data[3], data[5]))
         return objectives
 
