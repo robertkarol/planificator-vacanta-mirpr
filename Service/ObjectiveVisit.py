@@ -9,3 +9,7 @@ class ObjectiveVisit:
         self.location = location
         self.staying_time = staying_time
         self.priority = priority
+
+    def toString(self):
+        return " [ : "+str(self.location)+" || "+str(self.no_of_reviews)+" || "+\
+               str(self.staying_time)+" || "+str(self.description)+ "|| "+str(self.tripadvisor_link)+" ] "

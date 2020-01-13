@@ -133,7 +133,10 @@ class ServiceText:
             labels = []
 
             similarity = 0
-            with open('../Scrapping/labels/' + city + self.extension, 'rb') as f:
+            goodPath = str(
+                pathlib.Path(__file__).parent.parent.absolute()) + "\\Scrapping\\labels\\" + city + self.extension
+
+            with open(goodPath.replace('\\','/'), 'rb') as f:
                 obj = pickle.load(f)
                 list_labels_for_cities = obj.getListOfObjectsWithProb()
                 keywords = [x.getEntity() for x in list_labels_for_cities]
@@ -188,7 +191,7 @@ class ServiceText:
         return False
 
 
-s = ServiceText()
+# s = ServiceText()
 # s.extractFromWebFiles()
 #[listTextObjs, list_cities] = s.getSavedLabelsFromFile()
 # print("-------------------------------")

@@ -49,6 +49,7 @@ class ServiceRoute:
 
     def getCurrentLocation(self):
         g = geocoder.ip('me')
+        print(str(g.latlng[0])+"--"+ str(g.latlng[1]))
         return Location('start', g.latlng[0], g.latlng[1])
 
     def __build_schedule(self, schedule):
@@ -135,7 +136,10 @@ class ServiceRoute:
 
     def __parseFilterFile(self, filter):
         objectives = []
-        with open('./Scrapping/obiectiveData/' + filter + ".txt") as file:
+
+        goodPath = str(pathlib.Path(__file__).parent.parent.absolute()) + "\\Scrapping\\obiectiveData\\" + filter + ".txt"
+
+        with open(goodPath.replace('\\','/'),encoding="utf-8") as file:
             for line in file:
                 data = line.strip().split(";")
                 if len(data[-2]) == 0 or len(data[-3]) == 0:
@@ -160,7 +164,7 @@ class ServiceRoute:
                 objectives.append(ObjectiveVisit(location, s / len(nr), None, data[1], data[3], data[5]))
         return objectives
 
-    def getObjectivesByLocationAndFilter(self, filters):
+    def getObjectivesByLocationAndFilter(self,location, filters):
         objectives = []
         for filter in filters:
             objectives.extend(self.__parseFilterFile(filter))

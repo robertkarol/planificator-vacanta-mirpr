@@ -4,30 +4,142 @@ import os
 import numpy as np
 import pandas
 import folium
+import math
 
 from API.ItineraryAPI.Location import Location
+from Service.ObjectiveVisit import ObjectiveVisit
 from Service.ServiceMain import ServiceMain
-
+import operator
 
 service=ServiceMain()
 
 
 def searchByTextAlgorithm(text):
     # do stuff
-    print("RUNNING ALGORITHM FOR :")
+    print("RUNNING TEXT ALGORITHM FOR :")
     print(text)
     # get result
-    locations = ["Malibu", "California", "Sri Lanka"]
+    locations=service.getTextLocation(text)
+    # locations = ["Malibu", "California", "Sri Lanka"]
     searchByTextResultWindow(locations)
 
 
 def searchByImageAlgorithm(imageLocation):
     # do stuff
-    print("RUNNING ALGORITHM FOR :")
+    print("RUNNING IMAGE ALGORITHM FOR :")
     print(imageLocation)
     # get result
-    locations = ["Malibu", "California", "Sri Lanka"]
+    locations=service.getImageLocation(imageLocation)
+    # locations = ["Malibu", "California", "Sri Lanka"]
     searchByTextResultWindow(locations)
+
+
+def getTextObj(c, r,list):
+    try:
+        el=list[r]
+        if c==0:
+            return str(el.location.name)
+        if c==1:
+            return str(el.no_of_reviews).replace(',',"")
+        if c==2:
+            return str(el.staying_time)
+        if c==3:
+            return str(el.description)
+        if c==4:
+            return str(el.tripadvisor_link)
+    except:
+        return ""
+
+
+def getSize(col):
+    if col==0:
+        return 35
+    elif col==1:
+        return 15
+    elif col==2:
+        return 5
+    elif col==3:
+        return 80
+    elif col==4:
+        return 20
+    elif col==5:
+        return 20
+    elif col==6:
+        return 10
+
+def getObjectivesByImportance(location, param):
+    MAX_ROWS, MAX_COLS, COL_HEADINGS = len(param), 5, ('Nume', 'Review', 'Duration', 'Description', 'Link')
+
+    # A HIGHLY unusual layout definition
+    # Normally a layout is specified 1 ROW at a time. Here multiple rows are being contatenated together to produce the layout
+    # Note the " + \ " at the ends of the lines rather than the usual " , "
+    # This is done because each line is a list of lists
+    layout = [[sg.Text('Select all the great place you want to visit', font='Default 16')]] + \
+             [[sg.Text(' ' * 15)] + [sg.Text(s, key=s, enable_events=True, font='Courier 14', size=(8, 1)) for i, s in
+                                     enumerate(COL_HEADINGS)]] + \
+             [[ sg.Checkbox(r,size=(2,2))] + [sg.Input(getTextObj(c,r,param), justification='r', key=(r, c),size=(getSize(c),1)) for c in
+                                        range(MAX_COLS)] for r in range(MAX_ROWS)] + \
+             [[sg.Button('Show Route'), sg.Button('Exit')]]
+
+    # Create the window
+    window = sg.Window('A Table Simulation', layout, default_element_size=(10, 2), element_padding=(2, 1),
+                       return_keyboard_events=True)
+
+    current_cell = (0, 0)
+    while True:  # Event Loop
+        event, values = window.read()
+
+        if event in (None, 'Exit'):  # If user closed the window
+            break
+        # if clicked button to dump the table's values
+        if event in ('Show Route'):
+            print(values)
+            window.close()
+
+            for i in range(MAX_ROWS):
+                for v in param:
+                    print(values[i,0])
+                    print(values[i])
+                    if v.location.name==values[i,0] and values[i]==True:
+                        v.priority="1"
+                    else:
+                        v.priority="0"
+
+            return param
+
+        elem = window.find_element_with_focus()
+        current_cell = elem.Key if elem and type(elem.Key) is tuple else (0, 0)
+        r, c = current_cell
+
+        if event.startswith('Down'):
+            r = r + 1 * (r < MAX_ROWS - 1)
+        elif event.startswith('Left'):
+            c = c - 1 * (c > 0)
+        elif event.startswith('Right'):
+            c = c + 1 * (c < MAX_COLS - 1)
+        elif event.startswith('Up'):
+            r = r - 1 * (r > 0)
+        elif event in COL_HEADINGS:  # Perform a sort if a column heading was clicked
+            col_clicked = COL_HEADINGS.index(event)
+            try:
+                table = [[str(values[(row, col)]) for col in range(MAX_COLS)] for row in range(MAX_ROWS)]
+
+                new_table = sorted(table, key=operator.itemgetter(col_clicked))
+            except:
+                sg.popup_error('Error in table', 'Your table must contain only ints if you wish to sort by column')
+            else:
+                for i in range(MAX_ROWS):
+                    for j in range(MAX_COLS):
+                        window[(i, j)].update(new_table[i][j])
+                [window[c].update(font='Any 14') for c in COL_HEADINGS]  # make all column headings be normal fonts
+                window[event].update(font='Any 14 bold')  # bold the font that was clicked
+        # if the current cell changed, set focus on new cell
+        if current_cell != (r, c):
+            current_cell = r, c
+            window[current_cell].set_focus()  # set the focus on the element moved to
+            window[current_cell].update(
+                select=True)  # when setting focus, also highlight the data in the element so typing overwrites
+
 
 
 def searchRouteByLocationAlgorithm(location, filters):
@@ -35,9 +147,17 @@ def searchRouteByLocationAlgorithm(location, filters):
     print("With these filters ", filters)
 
     # does magic
+    param=service.getObjectivesByLocationAndFilter(location,filters)
+    # param = ["Eiffel Tower", "Louvre Museum", "Sena River", "champs-élysées"]
 
-    param = ["Eiffel Tower", "Louvre Museum", "Sena River", "champs-élysées"]
-    searchByLocationRouteResult(param)
+    lista = [el.toString() for el in param]
+    print(lista)
+
+    importanceList=getObjectivesByImportance(location,param)
+
+    itinerary,image=service.getRouteByLocationsAndImportance(importanceList)
+
+    searchByLocationRouteResult(itinerary,image)
 
 
 def showMeTheMap(param):
@@ -88,10 +208,14 @@ def showMeTheMap(param):
     pass
 
 
-def searchByLocationRouteResult(param):
+def searchByLocationRouteResult(itinerary,image):
+    # lista=[el.toString() for el in param]
+    print(itinerary)
+    print(image)
+    lista=[]
     layout = [
         [sg.Text('We found an amazing route for you..')],
-        [sg.Listbox(values=param, size=(30, 3))],
+        [sg.Listbox(values=lista, size=(130, 20))],
         [sg.Button("Show me on map"), sg.Button('Cancel')]
     ]
 
@@ -105,14 +229,15 @@ def searchByLocationRouteResult(param):
             break
         elif event in ("Show me on map"):
             windowTextResults.close()
-            showMeTheMap(param)
+            # showMeTheMap(param)
 
 
 # Very basic window.  Return values as a list
 def searchByTextResultWindow(locations):
+    print(locations)
     layout = [
         [sg.Text('We found some great places for you..')],
-        [sg.Listbox(values=locations, size=(30, 3))],
+        [sg.Listbox(values=locations, size=(80, 10))],
         [sg.Button("Find visiting route"), sg.Button('Cancel')]
     ]
 
@@ -138,7 +263,7 @@ def searchRouteByLocationWindow(location,filter):
         # [sg.Text('By what do you want to travel ?')],
         # [sg.Checkbox('Personal car'), sg.Checkbox('On foot', default=True), sg.Checkbox("Public transportation")],
         [sg.Text('What are your interests ?')],
-        [sg.Listbox(values=filter, size=(30, 3))],
+        [sg.Listbox(values=filter, size=(30, 10), select_mode="multiple")],
         [sg.Button('Search for me'), sg.Button('Cancel')]
     ]
     windowOperation = sg.Window('Text it out').Layout(layoutOperation)
@@ -157,13 +282,14 @@ def searchRouteByLocationWindow(location,filter):
 
 
 def searchByImageTextAlgorithm(text, path):
-    print("RUNNING ALGORITHM FOR :")
+    print("RUNNING TEXT & IMAGE ALGORITHM FOR :")
     print(text)
     print(path)
 
-
+    locations=service.getImageTextLocation(text,path)
     # get result
-    locations = ["Malibu", "California", "Sri Lanka"]
+    # locations = ["Malibu", "California", "Sri Lanka"]
+
     searchByTextResultWindow(locations)
 
 
@@ -171,7 +297,7 @@ def openWindowImageTextSearch():
     print('Text & Image search')
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))[0:-7] + "\\data\\blohsaved.png"
     print(ROOT_DIR)
-    image_elem = sg.Image(ROOT_DIR)
+    image_elem = sg.Image(ROOT_DIR,size=(80,80))
 
     layoutOperation = [
         [sg.Text('A few words to guide us..')],
@@ -181,7 +307,7 @@ def openWindowImageTextSearch():
         [image_elem],
         [sg.Button('Search for me'), sg.Button('Cancel')]
     ]
-    windowOperation = sg.Window('Tell us').Layout(layoutOperation)
+    windowOperation = sg.Window('Tell us',resizable=True).Layout(layoutOperation)
 
     while True:
         eventOperation, valuesOperation = windowOperation.Read(timeout=50)
@@ -196,7 +322,7 @@ def openWindowImageTextSearch():
             searchByImageTextAlgorithm(valuesOperation[0], valuesOperation[1])
 
         if valuesOperation[1] != "path":
-            image_elem.update(valuesOperation[0])
+            image_elem.update(valuesOperation[1])
 
 
 
@@ -271,11 +397,11 @@ def openWindowRoutesSearch():
 
 
 sg.ChangeLookAndFeel('Dark')
-sg.SetOptions(element_padding=(5, 5), button_element_size=(15, 2), auto_size_buttons=False,
+sg.SetOptions(element_padding=(5, 5), button_element_size=(20, 2), auto_size_buttons=False,
               button_color=('white', 'firebrick4'))
 layout = [
     [sg.Text('Let us plan an awesome holiday for you..')],
-    [sg.Button('Search with text'), sg.Button('Search with image'), sg.Button('Search with image & text'), sg.Button('Create a route')],
+    [sg.Button('Search only with text'), sg.Button('Search only with image'), sg.Button('Search with image & text'), sg.Button('Create a route')],
     [sg.Button('Cancel')]
 ]
 window = sg.Window('HOLIday').Layout(layout)
@@ -300,11 +426,11 @@ def main():
             window.disable()
             openWindowImageTextSearch()
 
-        if event in ('Search with text'):
+        if event in ('Search only with text'):
             window.disable()
             openWindowTextSearch()
 
-        if event in ('Search with image'):
+        if event in ('Search only with image'):
             window.disable()
             openWindowImageSearch()
 

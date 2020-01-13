@@ -104,8 +104,12 @@ class TravelItinerary:
             }
             requestJSON = json.dumps(requestJSON)
             headers = {'content-type': 'application/json'}
+
+            print("THE REQUEST :\n"+ str(requestJSON) , str(headers))
+
             response = requests.post(settings.OPTIMIZE_ITINERARY % settings.MICROSOFT_API_KEY, data=requestJSON, headers=headers)
             if response.status_code >= 400 and response.status_code < 500:
+                print("THE RESPONSE:\n "+response.text)
                 raise ValueError("Bad request or cannot schedule the desired itinerary within the given period")
             if response.status_code >= 500:
                 raise ValueError("The server encountered issues")
