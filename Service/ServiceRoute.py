@@ -170,6 +170,8 @@ class ServiceRoute:
                 for nr in nrs:
                     s += int(nr)
                 location = Location(data[0], float(data[-3]), float(data[-2]), schedule=schedule)
+                if location.is_closed(self.__start_date_time.split("T")[0]):
+                    continue
                 objectives.append(ObjectiveVisit(location, self.__nr_to_hour(s / len(nr)), None, data[1], data[3], data[5]))
         return objectives
 
