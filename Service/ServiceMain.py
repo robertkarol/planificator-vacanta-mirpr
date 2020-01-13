@@ -84,13 +84,6 @@ class ServiceMain:
 
 
         # startTime=datetime.datetime.now().isoformat()
-        startTime=(datetime.datetime.now()+datetime.timedelta(hours=10)).replace(microsecond=0).isoformat()
-        endTime=(datetime.datetime.now()+datetime.timedelta(hours=22)).replace(microsecond=0).isoformat()
-
-        print(startTime)
-        print(endTime)
-        self.__servRoute.configureRouteDetails(startTime,endTime,self.__servRoute.getCurrentLocation(),self.__servRoute.getCurrentLocation())
-
         print(importanceLocationDictionary)
         itinerary,image=self.__servRoute.getObjectivesVisitsRoute(importanceLocationDictionary)
         return itinerary,image
