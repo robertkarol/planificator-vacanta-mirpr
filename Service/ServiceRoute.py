@@ -134,9 +134,18 @@ class ServiceRoute:
         #print(built_schedule)
         return built_schedule
 
+    def __nr_to_hour(self, nr):
+        hour = int(nr)
+        minutes = int((nr - hour) * 60)
+        hour = str(hour)
+        if len(hour) == 1: hour = "0" + hour
+        minutes = str(minutes)
+        if len(minutes) == 1: minutes = "0" + minutes
+        return hour+":"+minutes+":00"
+
+
     def __parseFilterFile(self, filter):
         objectives = []
-
         goodPath = str(pathlib.Path(__file__).parent.parent.absolute()) + "\\Scrapping\\obiectiveData\\" + filter + ".txt"
 
         with open(goodPath.replace('\\','/'),encoding="utf-8") as file:
@@ -161,7 +170,7 @@ class ServiceRoute:
                 for nr in nrs:
                     s += int(nr)
                 location = Location(data[0], float(data[-3]), float(data[-2]), schedule=schedule)
-                objectives.append(ObjectiveVisit(location, s / len(nr), None, data[1], data[3], data[5]))
+                objectives.append(ObjectiveVisit(location, self.__nr_to_hour(s / len(nr)), None, data[1], data[3], data[5]))
         return objectives
 
     def getObjectivesByLocationAndFilter(self,location, filters):
