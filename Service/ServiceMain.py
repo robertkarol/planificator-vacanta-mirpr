@@ -26,10 +26,10 @@ class ServiceMain:
     # userText is the text received from the user as a string
     def getTextLocation(self,userText):
         listLocationByText=self.__servText.TextToTextAlgorithm(userText)
-
-        labelList=self.__servText.extractLabelsAlgorithm(userText)
-        listLocationByLabel=self.__servText.LabelToLabelComparison(labelList)
-
+        listLocationByLabel= []
+        # labelList=self.__servText.extractLabelsAlgorithm(userText)
+        # print("label list: " , labelList)
+        # listLocationByLabel=self.__servText.LabelToLabelComparison(labelList)
         listLocationsFinal=self.combineLocationList(listLocationByLabel,listLocationByText)
         return listLocationsFinal
 
@@ -38,7 +38,15 @@ class ServiceMain:
     # Each list's element is of form : ( label, probability )
     # label is a string, probability is a number between 0 and 1
     def combineLocationList(self, listLocationByLabel, listLocationByText):
-        pass
+
+        getTopText = listLocationByText[:4]
+        # location_list_from_labels = [ loc[0] for loc in getTopLabels ]
+        # objectives_list = []
+        # for list in getTopText:
+        #     location = list[2]
+        #     if location in location_list_from_labels:
+        #         objectives_list.append(list)
+        return getTopText
 
     # imagePath is the path of a png image
     def getImageLocation(self,imagePath):
@@ -80,3 +88,8 @@ class ServiceMain:
 
 
 
+service = ServiceMain()
+# service.getTextLocation("I wish to go with my family in a warm place where my children can go to the pool and where my husband can play poker. Also I want this place to be in the United States. Somewhere in California should do the trick. We would like to spend 10 thousand dollars and we want to go this summer.")
+# service.getTextLocation("I wish to go with my family in a warm place where my children can go to the pool and where my husband can play poker. Also I want this place to be in Paris, near eiffel tower.")
+print(service.getTextLocation("My husband and I want to visit Europe in August. My husband wants to participate to an art european festival and I am a hill hiking lover."
+                        " We would enjoy visiting some museums too."))
