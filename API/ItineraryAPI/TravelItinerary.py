@@ -125,9 +125,9 @@ class TravelItinerary:
         Returns also a stream corresponding to an image of a map with scheduled visits
         """
         visits, transitions = self.compute_route()
-        waypoints = self.__build_map_waypoint(self.__start_location, 1) + self.__build_map_waypoint(self.__end_location, 2)
+        waypoints = self.__build_map_waypoint(self.__start_location, 1) + self.__build_map_waypoint(self.__end_location, len(visits) + 2)
         for i in range(len(visits)):
-            waypoints += self.__build_map_waypoint(visits[i].location, i + 3)
+            waypoints += self.__build_map_waypoint(visits[i].location, i + 2)
         response = requests.get(settings.GET_MAP % (waypoints, settings.MICROSOFT_API_KEY), stream=True)
         if response.status_code >= 400 and response.status_code < 500:
             raise ValueError("Bad request or cannot schedule the desired itinerary within the given period")
