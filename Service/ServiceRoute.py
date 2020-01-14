@@ -182,8 +182,8 @@ class ServiceRoute:
     def getObjectivesByLocationAndFilter(self,location, filters):
         objectives = []
 
-        startTime = (datetime.datetime.now() + datetime.timedelta(hours=10)).replace(microsecond=0).isoformat()
-        endTime = (datetime.datetime.now() + datetime.timedelta(hours=22)).replace(microsecond=0).isoformat()
+        startTime = (datetime.datetime.now() + datetime.timedelta(hours=8)).replace(microsecond=0).isoformat()
+        endTime = (datetime.datetime.now() + datetime.timedelta(hours=18)).replace(microsecond=0).isoformat()
 
         print(startTime)
         print(endTime)
@@ -216,6 +216,6 @@ class ServiceRoute:
             self.__travelItinerary.add_visit(objectivesVisit.location,
                                              objectivesVisit.staying_time,
                                              objectivesVisit.priority)
-        visits, tranz, self.__map = self.__travelItinerary.compute_route_and_get_map()
-
-        return visits, tranz
+        visits, tranz, mapy = self.__travelItinerary.compute_route_and_get_map()
+        self.__map=mapy
+        return visits, tranz,mapy

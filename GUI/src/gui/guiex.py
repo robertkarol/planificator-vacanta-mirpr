@@ -1,3 +1,7 @@
+import cv2
+import pathlib
+import shutil
+
 import PySimpleGUI as sg
 import os
 
@@ -111,6 +115,9 @@ def getObjectivesByImportance(location, param):
                             print("GOT ONE GOOD")
                             v.priority = "1"
                             param.remove(v)
+            sg.popup_quick_message('Hang on for a moment, this will take a bit to calculate....',
+                                   auto_close=True, non_blocking=True)
+
             print(len(param))
             return param
 
@@ -162,9 +169,9 @@ def searchRouteByLocationAlgorithm(location, filters):
 
     importanceList=getObjectivesByImportance(location,param)
 
-    itinerary,image=service.getRouteByLocationsAndImportance(importanceList)
-
-    searchByLocationRouteResult(itinerary,image)
+    itinerary,tranz,image=service.getRouteByLocationsAndImportance(importanceList)
+    # image=service.getRouteVisualization()
+    searchByLocationRouteResult(itinerary,tranz,image)
 
 
 def showMeTheMap(param):
@@ -215,14 +222,30 @@ def showMeTheMap(param):
     pass
 
 
-def searchByLocationRouteResult(itinerary,image):
+def searchByLocationRouteResult(itinerary,tranz,image):
     # lista=[el.toString() for el in param]
     print(itinerary)
+    print(tranz)
     print(image)
-    lista=[]
+
+
+    ROOT_DIR = str(pathlib.Path(__file__).parent.parent.parent.parent.absolute()) + "\\GUI\\data\\route.jpeg"
+
+    with open(ROOT_DIR, 'wb') as out_file:
+        shutil.copyfileobj(image, out_file)
+    lista=[it for it in itinerary]
+    listaT=[tr for tr in tranz]
+
+
+    # image_elem = sg.Image(ROOT_DIR, size=(80, 80))
+    # image_elem=sg.Image(filename='', key='image')(data=cv2.imencode('.png', ROOT_DIR)[1].tobytes())
+
+
     layout = [
         [sg.Text('We found an amazing route for you..')],
         [sg.Listbox(values=lista, size=(130, 20))],
+        [sg.Listbox(values=listaT, size=(130, 20))],
+        # [image_elem],
         [sg.Button("Show me on map"), sg.Button('Cancel')]
     ]
 
@@ -246,7 +269,7 @@ def searchByTextResultWindow(locations):
     print(len(locations))
     print(len(locations[0]))
 
-    MAX_ROWS, MAX_COLS, COL_HEADINGS = len(locations), 3, ('Name', 'Probability', 'Descr')
+    MAX_ROWS, MAX_COLS, COL_HEADINGS = len(locations), len(locations[0]), ('Name', 'Probability', 'Descr')
 
     # A HIGHLY unusual layout definition
     # Normally a layout is specified 1 ROW at a time. Here multiple rows are being contatenated together to produce the layout
@@ -343,10 +366,10 @@ def searchRouteByLocationWindow(location,filter):
             break
         elif eventOperation in ('Search for me'):
             windowOperation.close()
-            sg.popup_quick_message('Hang on for a moment, this will take a bit to calculate....',
-                                   auto_close=True, non_blocking=True)
 
             print(valuesOperation)
+            sg.popup_quick_message('Hang on for a moment, this will take a bit to calculate....',
+                                   auto_close=True, non_blocking=True)
             searchRouteByLocationAlgorithm(valuesOperation[0], valuesOperation[1])
 
 
@@ -388,6 +411,9 @@ def openWindowImageTextSearch():
         elif eventOperation in ('Search for me'):
             windowOperation.close()
             print(valuesOperation[1])
+            sg.popup_quick_message('Hang on for a moment, this will take a bit to calculate....',
+                                   auto_close=True, non_blocking=True)
+
             searchByImageTextAlgorithm(valuesOperation[0], valuesOperation[1])
 
         if valuesOperation[1] != "path":
@@ -412,6 +438,9 @@ def openWindowTextSearch():
             break
         else:
             windowOperation.close()
+            sg.popup_quick_message('Hang on for a moment, this will take a bit to calculate....',
+                                   auto_close=True, non_blocking=True)
+
             searchByTextAlgorithm(valuesOperation[0])
 
 
@@ -423,8 +452,8 @@ def openWindowImageSearch():
     layoutOperation = [
         [sg.Text('An image says what a thousand words can\'t..')],
         [sg.Text('The image :'), sg.InputText('path'), sg.FileBrowse()],
-        [image_elem],
-        [sg.Button('Search for me'), sg.Button('Cancel')]
+        [sg.Button('Search for me'), sg.Button('Cancel')],
+        [image_elem]
     ]
     windowOperation = sg.Window('Text it out').Layout(layoutOperation)
 
@@ -437,6 +466,9 @@ def openWindowImageSearch():
         elif eventOperation in ('Search for me'):
             windowOperation.close()
             print(valuesOperation[0])
+            sg.popup_quick_message('Hang on for a moment, this will take a bit to calculate....',
+                                   auto_close=True, non_blocking=True)
+
             searchByImageAlgorithm(valuesOperation[0])
 
         if valuesOperation[0] != "path":
@@ -469,6 +501,9 @@ def openWindowRoutesSearch():
             windowOperation.close()
             filter=service.getFilters()
             print(filter)
+            sg.popup_quick_message('Hang on for a moment, this will take a bit to calculate....',
+                                   auto_close=True, non_blocking=True)
+
             searchRouteByLocationWindow(valuesOperation[0],filter)
 
 
