@@ -84,20 +84,12 @@ class ServiceMain:
 
 
         # startTime=datetime.datetime.now().isoformat()
-        startTime=(datetime.datetime.now()+datetime.timedelta(hours=10)).replace(microsecond=0).isoformat()
-        endTime=(datetime.datetime.now()+datetime.timedelta(hours=22)).replace(microsecond=0).isoformat()
-
-        print(startTime)
-        print(endTime)
-        self.__servRoute.configureRouteDetails(startTime,endTime,self.__servRoute.getCurrentLocation(),self.__servRoute.getCurrentLocation())
-
         print(importanceLocationDictionary)
-        itinerary,image=self.__servRoute.getObjectivesVisitsRoute(importanceLocationDictionary)
-        return itinerary,image
+        itinerary,tranz,image=self.__servRoute.getObjectivesVisitsRoute(importanceLocationDictionary)
+        return itinerary,tranz,image
 
-
-
-
+    def getRouteVisualization(self):
+        self.__servRoute.getRouteVisualization()
 
 # service = ServiceMain()
 # service.getTextLocation("I wish to go with my family in a warm place where my children can go to the pool and where my husband can play poker. Also I want this place to be in the United States. Somewhere in California should do the trick. We would like to spend 10 thousand dollars and we want to go this summer.")
